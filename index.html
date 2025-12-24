@@ -660,8 +660,8 @@
         <div class="header-close" onclick="window.history.back()">✕</div>
         <div class="header-title">Relatório de Visita</div>
         <div class="header-save">
-            <div class="header-action" onclick="exportToPDF()">PDF</div>
-            <div class="header-action" onclick="window.print()">Imprimir</div>
+            <div class="header-action" onclick="exportToPDF()">📄 PDF</div>
+            <div class="header-action" onclick="window.print()">🖨️ Imprimir</div>
         </div>
     </div>
 
@@ -896,7 +896,6 @@
     <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto()">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
         const stages = {
@@ -1209,7 +1208,6 @@
                 div.className = 'section';
                 
                 if (cat.type === 'multi') {
-                    // Multiple severity levels for this category
                     let levelsHTML = '';
                     cat.levels.forEach(level => {
                         levelsHTML += `
@@ -1233,7 +1231,6 @@
                         ${levelsHTML}
                     `;
                 } else if (cat.type === 'nutrients') {
-                    // Nutrient selection grid
                     let nutrientsHTML = cat.options.map(nut => `
                         <div class="nutrient-badge ${selectedNutrients.has(nut.id) ? 'selected' : ''}" 
                              onclick="toggleNutrient('${nut.id}', this)">
@@ -1423,16 +1420,13 @@
             }
         });
 
-        // Global error handler
         window.addEventListener('error', function(e) {
             console.error('Global error:', e.error || e.message);
             return true;
         });
 
-        // PDF Export Function
         async function exportToPDF() {
             try {
-                // Show loading message
                 const loadingDiv = document.createElement('div');
                 loadingDiv.style.cssText = `
                     position: fixed;
@@ -1450,7 +1444,6 @@
                 loadingDiv.innerHTML = '📄 Gerando PDF...<br><span style="font-size: 0.8em; opacity: 0.8;">Aguarde</span>';
                 document.body.appendChild(loadingDiv);
 
-                // Wait for jsPDF to load
                 if (typeof window.jspdf === 'undefined') {
                     throw new Error('jsPDF não carregado');
                 }
@@ -1464,7 +1457,6 @@
                 const contentWidth = pageWidth - (2 * margin);
                 let yPosition = margin;
 
-                // Helper function to check if we need a new page
                 function checkNewPage(requiredSpace) {
                     if (yPosition + requiredSpace > pageHeight - margin) {
                         pdf.addPage();
@@ -1540,7 +1532,6 @@
                 pdf.text(`Estádio: ${selectedStage}`, margin, yPosition);
                 yPosition += 6;
 
-                // Get attention points if stage is selected
                 const stageCode = document.getElementById('stageSelect').value;
                 if (stageCode && stages[stageCode]) {
                     yPosition += 2;
@@ -1618,7 +1609,8 @@
                         const photo = photos[i];
                         const photoType = photoTypes[photo.type];
                         
-                        checkNewPage(80);
+                        // Cada foto precisa de ~70mm de espaço (título + imagem)
+                        checkNewPage(70);
                         
                         pdf.setFontSize(10);
                         pdf.setFont(undefined, 'bold');
@@ -1626,10 +1618,13 @@
                         yPosition += 5;
 
                         try {
-                            const imgWidth = contentWidth;
-                            const imgHeight = 60;
-                            pdf.addImage(photo.data, 'JPEG', margin, yPosition, imgWidth, imgHeight);
-                            yPosition += imgHeight + 10;
+                            // Calcula dimensões para manter proporção e caber na página A4
+                            const maxWidth = contentWidth;
+                            const maxHeight = 60; // Altura máxima em mm
+                            
+                            // Adiciona imagem ajustada
+                            pdf.addImage(photo.data, 'JPEG', margin, yPosition, maxWidth, maxHeight, undefined, 'FAST');
+                            yPosition += maxHeight + 8;
                         } catch (err) {
                             console.error('Error adding image:', err);
                             pdf.setFont(undefined, 'normal');
@@ -1706,10 +1701,8 @@
                 const fileName = `Relatorio_Visita_${propriedade.replace(/\s+/g, '_')}_${data}.pdf`;
                 pdf.save(fileName);
 
-                // Remove loading message
                 document.body.removeChild(loadingDiv);
 
-                // Show success message
                 const successDiv = document.createElement('div');
                 successDiv.style.cssText = `
                     position: fixed;
