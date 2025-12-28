@@ -1,1738 +1,791 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Visita Agrícola</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(to bottom, #f5f5f7 0%, #e8e8ea 100%);
-            padding: 0;
-            min-height: 100vh;
-        }
-
-        .header-bar {
-            background: linear-gradient(180deg, #2c2c2e 0%, #1c1c1e 100%);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-        }
-
-        .header-close {
-            font-size: 1.3em;
-            cursor: pointer;
-        }
-
-        .header-title {
-            font-size: 1em;
-            font-weight: 500;
-        }
-
-        .header-save {
-            color: #007AFF;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .header-action {
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
-            transition: background 0.2s;
-        }
-
-        .header-action:hover {
-            background: rgba(0, 122, 255, 0.1);
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-        }
-
-        .content {
-            padding: 0;
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            margin: 12px 16px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 
-                        0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .section-title {
-            font-size: 0.75em;
-            color: #86868b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .form-group {
-            margin-bottom: 0;
-        }
-
-        .form-row {
-            display: flex;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e5e5e7;
-        }
-
-        .form-row:last-child {
-            border-bottom: none;
-        }
-
-        label {
-            flex: 0 0 100px;
-            color: #1d1d1f;
-            font-size: 1em;
-            font-weight: 400;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="number"],
-        textarea,
-        select {
-            flex: 1;
-            padding: 8px 0;
-            border: none;
-            font-size: 1em;
-            color: #1d1d1f;
-            background: transparent;
-            text-align: right;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-        }
-
-        textarea {
-            text-align: left;
-            min-height: 80px;
-            resize: vertical;
-            padding: 12px 0;
-        }
-
-        .stage-selector select {
-            font-size: 1em;
-            cursor: pointer;
-            appearance: none;
-            background: transparent;
-        }
-
-        .stage-display {
-            display: none;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 247, 0.98) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            margin: 15px 0;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08),
-                        0 8px 32px rgba(0, 0, 0, 0.04),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-        }
-
-        .stage-display.active {
-            display: block;
-            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stage-icon-large {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-
-        .stage-name-large {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #1d1d1f;
-            margin-bottom: 5px;
-        }
-
-        .stage-description-large {
-            font-size: 0.9em;
-            color: #86868b;
-            margin-bottom: 10px;
-        }
-
-        .dap-badge {
-            display: inline-block;
-            background: #007AFF;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 16px;
-            font-weight: 500;
-            font-size: 0.85em;
-        }
-
-        .attention-points {
-            background: linear-gradient(135deg, #fff8e1 0%, #fff3cd 100%);
-            border-radius: 12px;
-            padding: 16px;
-            margin: 15px 0 0 0;
-            border: 1px solid rgba(255, 193, 7, 0.2);
-            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.08),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        .attention-points h3 {
-            color: #856404;
-            margin-bottom: 12px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .attention-points ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .attention-points li {
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            font-size: 0.85em;
-            color: #856404;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-            border-left: 3px solid #ffc107;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .attention-points li:last-child {
-            margin-bottom: 0;
-        }
-
-        .attention-points li:before {
-            content: "• ";
-            margin-right: 8px;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin: 15px 0;
-        }
-
-        .category-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .category-circle {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12),
-                        0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .category-item:active .category-circle {
-            transform: scale(0.92);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .category-item.selected .category-circle {
-            box-shadow: 0 0 0 3px white,
-                        0 0 0 6px #007AFF;
-            transform: scale(1.0);
-        }
-
-        .category-circle.doenca { background: #34C759; }
-        .category-circle.insetos { background: #FF2D55; }
-        .category-circle.ervas { background: #FF9500; }
-        .category-circle.nutrientes { background: #8E8E93; }
-        .category-circle.agua { background: #30B0C7; }
-        .category-circle.outro { background: #5856D6; }
-
-        .category-name {
-            font-size: 0.75em;
-            color: #1d1d1f;
-            text-align: center;
-            font-weight: 400;
-        }
-
-        .nutrient-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .nutrient-badge {
-            padding: 12px 16px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            background: white;
-            color: #1d1d1f;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1.5px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .nutrient-badge:active {
-            transform: scale(0.96);
-        }
-
-        .nutrient-badge.selected {
-            background: linear-gradient(135deg, #FF9500 0%, #FF8000 100%);
-            color: white;
-            border-color: transparent;
-            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.35);
-        }
-
-        .nutrient-badge-icon {
-            font-size: 1.2em;
-            font-weight: 700;
-        }
-
-        .nutrient-badge-name {
-            font-size: 0.75em;
-            font-weight: 500;
-        }
-
-        .problem-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .problem-icon-large {
-            font-size: 2em;
-        }
-
-        .problem-title {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #1d1d1f;
-        }
-
-        .severity-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-
-        .severity-option {
-            padding: 12px 8px;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 0.85em;
-            font-weight: 600;
-            background: white;
-            color: #1d1d1f;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1.5px solid rgba(0, 0, 0, 0.08);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05),
-                        0 1px 3px rgba(0, 0, 0, 0.03);
-        }
-
-        .severity-option:active {
-            transform: scale(0.96);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .severity-option.selected {
-            transform: scale(0.98);
-            border-color: transparent;
-        }
-
-        .severity-option.nenhum.selected {
-            background: linear-gradient(135deg, #34C759 0%, #2DB04A 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.35),
-                        0 2px 6px rgba(52, 199, 89, 0.25);
-        }
-
-        .severity-option.baixa.selected {
-            background: linear-gradient(135deg, #FF9500 0%, #FF8000 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.35),
-                        0 2px 6px rgba(255, 149, 0, 0.25);
-        }
-
-        .severity-option.media.selected {
-            background: linear-gradient(135deg, #FF6B00 0%, #FF5500 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.35),
-                        0 2px 6px rgba(255, 107, 0, 0.25);
-        }
-
-        .severity-option.alta.selected {
-            background: linear-gradient(135deg, #FF3B30 0%, #E02020 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255, 59, 48, 0.35),
-                        0 2px 6px rgba(255, 59, 48, 0.25);
-        }
-
-        .add-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 0;
-            cursor: pointer;
-            color: #1d1d1f;
-        }
-
-        .add-item-icon {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-        }
-
-        .add-item-text {
-            font-size: 1em;
-        }
-
-        .photos-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 15px 0 0 0;
-        }
-
-        .photo-item {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08),
-                        0 4px 24px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .photo-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 16px;
-            background: linear-gradient(to bottom, #fafafa 0%, #f5f5f7 100%);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .photo-item-type {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            color: #1d1d1f;
-            font-size: 0.9em;
-        }
-
-        .photo-item-remove {
-            background: linear-gradient(135deg, #FF3B30 0%, #E02020 100%);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 1.1em;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
-            transition: all 0.2s;
-        }
-
-        .photo-item-remove:active {
-            transform: scale(0.9);
-        }
-
-        .photo-item-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1000;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px 12px 0 0;
-            width: 100%;
-            max-width: 800px;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #e5e5e7;
-        }
-
-        .modal-title {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #1d1d1f;
-            margin-bottom: 5px;
-        }
-
-        .modal-subtitle {
-            font-size: 0.85em;
-            color: #86868b;
-        }
-
-        .modal-options {
-            padding: 10px 0;
-        }
-
-        .modal-option {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 20px;
-            cursor: pointer;
-            border-bottom: 1px solid #e5e5e7;
-        }
-
-        .modal-option:last-child {
-            border-bottom: none;
-        }
-
-        .modal-option:active {
-            background: #f5f5f7;
-        }
-
-        .modal-option-icon {
-            font-size: 1.8em;
-        }
-
-        .modal-option-name {
-            font-size: 1em;
-            color: #1d1d1f;
-        }
-
-        .modal-cancel {
-            padding: 15px 20px;
-            text-align: center;
-            color: #007AFF;
-            font-weight: 600;
-            cursor: pointer;
-            border-top: 1px solid #e5e5e7;
-        }
-
-        .dap-info {
-            background: #f5f5f7;
-            border-radius: 8px;
-            padding: 10px 15px;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .dap-info strong {
-            color: #007AFF;
-            font-size: 0.95em;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        @media (max-width: 600px) {
-            .category-grid {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 10px;
-            }
-
-            .category-circle {
-                width: 55px;
-                height: 55px;
-                font-size: 1.6em;
-            }
-
-            .category-name {
-                font-size: 0.7em;
-            }
-
-            .severity-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 6px;
-            }
-
-            .severity-option {
-                padding: 10px 6px;
-                font-size: 0.8em;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                margin-top: 20px;
-                margin-bottom: 20px;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-
-            .modal-content {
-                border-radius: 12px;
-                max-height: 80vh;
-            }
-        }
-
-        @media print {
-            .header-bar,
-            .add-item,
-            .photo-item-remove,
-            .remove-tag {
-                display: none;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Visita Agrícola</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(to bottom,#f5f5f7 0%,#e8e8ea 100%);padding:0;min-height:100vh}
+.header-bar{background:linear-gradient(180deg,#2c2c2e 0%,#1c1c1e 100%);color:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.header-close{font-size:1.3em;cursor:pointer}
+.header-title{font-size:1em;font-weight:500}
+.header-save{color:#007AFF;font-weight:600;cursor:pointer;display:flex;gap:15px;align-items:center}
+.header-action{cursor:pointer;padding:6px 12px;border-radius:6px;transition:background .2s}
+.header-action:hover{background:rgba(0,122,255,.1)}
+.container{max-width:800px;margin:0 auto;background:white}
+.content{padding:0}
+.section{background:white;border-radius:12px;margin:12px 16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04)}
+.section-title{font-size:.75em;color:#86868b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:15px;font-weight:500}
+.form-group{margin-bottom:0}
+.form-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #e5e5e7}
+.form-row:last-child{border-bottom:none}
+label{flex:0 0 100px;color:#1d1d1f;font-size:1em;font-weight:400}
+input[type="text"],input[type="date"],input[type="number"],textarea,select{flex:1;padding:8px 0;border:none;font-size:1em;color:#1d1d1f;background:transparent;text-align:right}
+input:focus,textarea:focus,select:focus{outline:none}
+textarea{text-align:left;min-height:80px;resize:vertical;padding:12px 0}
+.stage-selector select{font-size:1em;cursor:pointer;appearance:none;background:transparent}
+.stage-display{display:none;background:linear-gradient(135deg,rgba(255,255,255,.95) 0%,rgba(245,245,247,.98) 100%);backdrop-filter:blur(10px);border-radius:16px;padding:24px;text-align:center;margin:15px 0;border:1px solid rgba(0,0,0,.05);box-shadow:0 4px 16px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.04),inset 0 1px 0 rgba(255,255,255,.8)}
+.stage-display.active{display:block;animation:slideUp .4s cubic-bezier(.4,0,.2,1)}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.stage-icon-large{font-size:3em;margin-bottom:10px}
+.stage-name-large{font-size:1.2em;font-weight:600;color:#1d1d1f;margin-bottom:5px}
+.stage-description-large{font-size:.9em;color:#86868b;margin-bottom:10px}
+.dap-badge{display:inline-block;background:#007AFF;color:white;padding:6px 14px;border-radius:16px;font-weight:500;font-size:.85em}
+.attention-points{background:linear-gradient(135deg,#fff8e1 0%,#fff3cd 100%);border-radius:12px;padding:16px;margin:15px 0 0 0;border:1px solid rgba(255,193,7,.2);box-shadow:0 2px 8px rgba(255,152,0,.08),inset 0 1px 0 rgba(255,255,255,.5)}
+.attention-points h3{color:#856404;margin-bottom:12px;font-size:.9em;font-weight:600;display:flex;align-items:center;gap:6px}
+.attention-points ul{list-style:none;padding-left:0}
+.attention-points li{padding:10px 12px;margin-bottom:6px;font-size:.85em;color:#856404;background:rgba(255,255,255,.7);border-radius:8px;border-left:3px solid #ffc107;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.attention-points li:last-child{margin-bottom:0}
+.attention-points li:before{content:"• ";margin-right:8px}
+.category-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:15px;margin:15px 0}
+.category-item{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}
+.category-circle{width:65px;height:65px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2em;transition:all .3s cubic-bezier(.4,0,.2,1);box-shadow:0 2px 8px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.08)}
+.category-item:active .category-circle{transform:scale(.92);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.category-item.selected .category-circle{box-shadow:0 0 0 3px white,0 0 0 6px #007AFF;transform:scale(1)}
+.category-circle.doenca{background:#34C759}
+.category-circle.insetos{background:#FF2D55}
+.category-circle.ervas{background:#FF9500}
+.category-circle.nutrientes{background:#8E8E93}
+.category-circle.agua{background:#30B0C7}
+.category-circle.outro{background:#5856D6}
+.category-name{font-size:.75em;color:#1d1d1f;text-align:center;font-weight:400}
+.nutrient-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}
+.nutrient-badge{padding:12px 16px;border-radius:10px;text-align:center;cursor:pointer;font-size:.9em;font-weight:600;background:white;color:#1d1d1f;transition:all .3s cubic-bezier(.4,0,.2,1);border:1.5px solid rgba(0,0,0,.08);box-shadow:0 2px 6px rgba(0,0,0,.05);display:flex;flex-direction:column;gap:4px}
+.nutrient-badge:active{transform:scale(.96)}
+.nutrient-badge.selected{background:linear-gradient(135deg,#FF9500 0%,#FF8000 100%);color:white;border-color:transparent;box-shadow:0 4px 12px rgba(255,149,0,.35)}
+.nutrient-badge-icon{font-size:1.2em;font-weight:700}
+.nutrient-badge-name{font-size:.75em;font-weight:500}
+.problem-header{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.problem-icon-large{font-size:2em}
+.problem-title{font-size:1.1em;font-weight:600;color:#1d1d1f}
+.severity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.severity-option{padding:12px 8px;border-radius:10px;text-align:center;cursor:pointer;font-size:.85em;font-weight:600;background:white;color:#1d1d1f;transition:all .3s cubic-bezier(.4,0,.2,1);border:1.5px solid rgba(0,0,0,.08);box-shadow:0 2px 6px rgba(0,0,0,.05),0 1px 3px rgba(0,0,0,.03)}
+.severity-option:active{transform:scale(.96);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.severity-option.selected{transform:scale(.98);border-color:transparent}
+.severity-option.nenhum.selected{background:linear-gradient(135deg,#34C759 0%,#2DB04A 100%);color:white;box-shadow:0 4px 12px rgba(52,199,89,.35),0 2px 6px rgba(52,199,89,.25)}
+.severity-option.baixa.selected{background:linear-gradient(135deg,#FF9500 0%,#FF8000 100%);color:white;box-shadow:0 4px 12px rgba(255,149,0,.35),0 2px 6px rgba(255,149,0,.25)}
+.severity-option.media.selected{background:linear-gradient(135deg,#FF6B00 0%,#FF5500 100%);color:white;box-shadow:0 4px 12px rgba(255,107,0,.35),0 2px 6px rgba(255,107,0,.25)}
+.severity-option.alta.selected{background:linear-gradient(135deg,#FF3B30 0%,#E02020 100%);color:white;box-shadow:0 4px 12px rgba(255,59,48,.35),0 2px 6px rgba(255,59,48,.25)}
+.add-item{display:flex;align-items:center;gap:15px;padding:15px 0;cursor:pointer;color:#1d1d1f}
+.add-item-icon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:1.5em}
+.add-item-text{font-size:1em}
+.photos-list{display:flex;flex-direction:column;gap:15px;margin:15px 0 0 0}
+.photo-item{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08),0 4px 24px rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.05)}
+.photo-item-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:linear-gradient(to bottom,#fafafa 0%,#f5f5f7 100%);border-bottom:1px solid rgba(0,0,0,.06)}
+.photo-item-type{display:flex;align-items:center;gap:8px;font-weight:600;color:#1d1d1f;font-size:.9em}
+.photo-item-remove{background:linear-gradient(135deg,#FF3B30 0%,#E02020 100%);color:white;border:none;border-radius:50%;width:28px;height:28px;font-size:1.1em;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,59,48,.3);transition:all .2s}
+.photo-item-remove:active{transform:scale(.9)}
+.photo-item-image{width:100%;height:200px;object-fit:cover}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:1000;align-items:flex-end;justify-content:center}
+.modal.active{display:flex}
+.modal-content{background:white;border-radius:12px 12px 0 0;width:100%;max-width:800px;max-height:70vh;overflow-y:auto}
+.modal-header{padding:20px;border-bottom:1px solid #e5e5e7}
+.modal-title{font-size:1.1em;font-weight:600;color:#1d1d1f;margin-bottom:5px}
+.modal-subtitle{font-size:.85em;color:#86868b}
+.modal-options{padding:10px 0}
+.modal-option{display:flex;align-items:center;gap:15px;padding:15px 20px;cursor:pointer;border-bottom:1px solid #e5e5e7}
+.modal-option:last-child{border-bottom:none}
+.modal-option:active{background:#f5f5f7}
+.modal-option-icon{font-size:1.8em}
+.modal-option-name{font-size:1em;color:#1d1d1f}
+.modal-cancel{padding:15px 20px;text-align:center;color:#007AFF;font-weight:600;cursor:pointer;border-top:1px solid #e5e5e7}
+.dap-info{background:#f5f5f7;border-radius:8px;padding:10px 15px;margin-top:10px;text-align:center}
+.dap-info strong{color:#007AFF;font-size:.95em}
+input[type="file"]{display:none}
+.photo-size-selector{margin-top:12px;display:flex;gap:10px;align-items:center}
+.photo-size-selector label{font-size:.95em;color:#1d1d1f}
+.photo-size-selector select{font-size:1em;border:none;background:transparent;border-bottom:1px solid #ccc;padding:4px 0}
+@media (max-width:600px){
+  .category-grid{grid-template-columns:repeat(5,1fr);gap:10px}
+  .category-circle{width:55px;height:55px;font-size:1.6em}
+  .category-name{font-size:.7em}
+  .severity-grid{grid-template-columns:repeat(4,1fr);gap:6px}
+  .severity-option{padding:10px 6px;font-size:.8em}
+}
+@media (min-width:768px){
+  .container{margin-top:20px;margin-bottom:20px;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+  .modal-content{border-radius:12px;max-height:80vh}
+}
+@media print{
+  .header-bar,.add-item,.photo-item-remove,.remove-tag{display:none}
+}
+</style>
 </head>
 <body>
-    <div class="header-bar">
-        <div class="header-close" onclick="window.history.back()">✕</div>
-        <div class="header-title">Relatório de Visita</div>
-        <div class="header-save">
-            <div class="header-action" onclick="exportToPDF()">📄 PDF</div>
-            <div class="header-action" onclick="window.print()">🖨️ Imprimir</div>
-        </div>
+<div class="header-bar">
+  <div class="header-close" onclick="window.history.back()">✕</div>
+  <div class="header-title">Relatório de Visita</div>
+  <div class="header-save">
+    <div class="header-action" onclick="exportToPDF()">📄 PDF</div>
+    <div class="header-action" onclick="window.print()">🖨️ Imprimir</div>
+  </div>
+</div>
+<div class="container">
+  <div class="content">
+    <!-- Seção de Informações -->
+    <div class="section">
+      <div class="section-title">Informações da Visita</div>
+      <div class="form-row"><label>Produtor</label><input type="text" id="produtor" placeholder="Nome"></div>
+      <div class="form-row"><label>Propriedade</label><input type="text" id="propriedade" placeholder="Nome"></div>
+      <div class="form-row"><label>Data</label><input type="date" id="data"></div>
+      <div class="form-row"><label>Área (ha)</label><input type="number" id="area" placeholder="0.00" step="0.01"></div>
+      <div class="form-row"><label>Cultivar</label><input type="text" id="cultivar" placeholder="TMG 7062"></div>
+      <div class="form-row"><label>Plantio</label><input type="date" id="plantio" onchange="calculateDAP()"></div>
+      <div class="dap-info" id="dapInfo" style="display: none;"><strong>DAP: <span id="dapValue">0</span> dias</strong></div>
     </div>
 
-    <div class="container">
-        <div class="content">
-            <div class="section">
-                <div class="section-title">Informações da Visita</div>
-                <div class="form-row">
-                    <label>Produtor</label>
-                    <input type="text" id="produtor" placeholder="Nome">
-                </div>
-                <div class="form-row">
-                    <label>Propriedade</label>
-                    <input type="text" id="propriedade" placeholder="Nome">
-                </div>
-                <div class="form-row">
-                    <label>Data</label>
-                    <input type="date" id="data">
-                </div>
-                <div class="form-row">
-                    <label>Área (ha)</label>
-                    <input type="number" id="area" placeholder="0.00" step="0.01">
-                </div>
-                <div class="form-row">
-                    <label>Cultivar</label>
-                    <input type="text" id="cultivar" placeholder="TMG 7062">
-                </div>
-                <div class="form-row">
-                    <label>Plantio</label>
-                    <input type="date" id="plantio" onchange="calculateDAP()">
-                </div>
-                <div class="dap-info" id="dapInfo" style="display: none;">
-                    <strong>DAP: <span id="dapValue">0</span> dias</strong>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Estádio Fenológico</div>
-                <div class="form-row">
-                    <label>Estádio</label>
-                    <select id="stageSelect" onchange="showStageInfo()">
-                        <option value="">Selecione</option>
-                        <option value="VE">VE - Emergência</option>
-                        <option value="VC">VC - Cotilédones</option>
-                        <option value="V1">V1 - 1ª Trifoliolada</option>
-                        <option value="V2">V2 - 2ª Trifoliolada</option>
-                        <option value="V3">V3 - 3ª Trifoliolada</option>
-                        <option value="V4">V4 - 4ª Trifoliolada</option>
-                        <option value="V5">V5 - 5ª Trifoliolada</option>
-                        <option value="R1">R1 - Florescimento</option>
-                        <option value="R2">R2 - Floração Plena</option>
-                        <option value="R3">R3 - Vagens 1cm</option>
-                        <option value="R4">R4 - Vagens 2cm</option>
-                        <option value="R5.1">R5.1 - Início Enchimento</option>
-                        <option value="R5.3">R5.3 - 50% Enchimento</option>
-                        <option value="R5.5">R5.5 - 100% Enchimento</option>
-                        <option value="R6">R6 - Grãos Formados</option>
-                        <option value="R7">R7 - Início Maturação</option>
-                        <option value="R8">R8 - Maturação Plena</option>
-                    </select>
-                </div>
-
-                <div class="stage-display" id="stageDisplay">
-                    <div class="stage-icon-large" id="stageIcon"></div>
-                    <div class="stage-name-large" id="stageName"></div>
-                    <div class="stage-description-large" id="stageDescription"></div>
-                    <div class="dap-badge" id="stageDap"></div>
-                </div>
-
-                <div class="attention-points" id="attentionPoints" style="display: none;">
-                    <h3>⚠️ Pontos de Atenção</h3>
-                    <ul id="attentionList"></ul>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Categoria</div>
-                
-                <div class="category-grid">
-                    <div class="category-item" onclick="toggleCategory('doenca')">
-                        <div class="category-circle doenca">🦠</div>
-                        <div class="category-name">Doença</div>
-                    </div>
-                    <div class="category-item" onclick="toggleCategory('insetos')">
-                        <div class="category-circle insetos">🐛</div>
-                        <div class="category-name">Insetos</div>
-                    </div>
-                    <div class="category-item" onclick="toggleCategory('ervas')">
-                        <div class="category-circle ervas">🌾</div>
-                        <div class="category-name">Ervas daninhas</div>
-                    </div>
-                    <div class="category-item" onclick="toggleCategory('nutrientes')">
-                        <div class="category-circle nutrientes">Ⓝ</div>
-                        <div class="category-name">Nutrientes</div>
-                    </div>
-                    <div class="category-item" onclick="toggleCategory('agua')">
-                        <div class="category-circle agua">💧</div>
-                        <div class="category-name">Água</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="problemsContainer"></div>
-
-            <div class="section">
-                <div class="section-title">Fotos</div>
-                <div class="add-item" onclick="openPhotoCategories()">
-                    <div class="add-item-icon">📷</div>
-                    <div class="add-item-text">Adicionar Foto</div>
-                </div>
-                <div class="photos-list" id="photosList"></div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Observações</div>
-                <div class="form-row">
-                    <textarea id="observacoes" placeholder="Observações gerais sobre a lavoura..."></textarea>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Recomendações</div>
-                <div class="form-row">
-                    <textarea id="recomendacoes" placeholder="Recomendações técnicas..."></textarea>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Responsável</div>
-                <div class="form-row">
-                    <input type="text" id="tecnico" placeholder="Nome do técnico">
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Localização</div>
-                <div class="form-row">
-                    <label>Coordenadas</label>
-                    <input type="text" id="coordenadas" placeholder="Pin" readonly>
-                </div>
-                <div style="padding: 12px 0; color: #007AFF; cursor: pointer; font-size: 0.95em;" onclick="getCurrentLocation()">
-                    📍 Definir para minha localização atual
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Tipo de Ocorrência</div>
-                <div style="display: flex; gap: 30px; padding: 12px 0;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex: none;">
-                        <input type="radio" name="tipo" value="sazonal" id="sazonal" checked style="width: 20px; height: 20px;">
-                        <span>Sazonal</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex: none;">
-                        <input type="radio" name="tipo" value="permanente" id="permanente" style="width: 20px; height: 20px;">
-                        <span>Permanente</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">Amostras</div>
-                <div style="padding: 12px 0;">
-                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                        <input type="checkbox" id="amostraSolo" style="width: 22px; height: 22px; cursor: pointer;">
-                        <span style="font-size: 1em; color: #1d1d1f;">Amostra de solo</span>
-                    </label>
-                </div>
-            </div>
-        </div>
+    <!-- Estádio Fenológico -->
+    <div class="section">
+      <div class="section-title">Estádio Fenológico</div>
+      <div class="form-row">
+        <label>Estádio</label>
+        <select id="stageSelect" onchange="showStageInfo()">
+          <option value="">Selecione</option>
+          <option value="VE">VE - Emergência</option>
+          <option value="VC">VC - Cotilédones</option>
+          <option value="V1">V1 - 1ª Trifoliolada</option>
+          <option value="V2">V2 - 2ª Trifoliolada</option>
+          <option value="V3">V3 - 3ª Trifoliolada</option>
+          <option value="V4">V4 - 4ª Trifoliolada</option>
+          <option value="V5">V5 - 5ª Trifoliolada</option>
+          <option value="R1">R1 - Florescimento</option>
+          <option value="R2">R2 - Floração Plena</option>
+          <option value="R3">R3 - Vagens 1cm</option>
+          <option value="R4">R4 - Vagens 2cm</option>
+          <option value="R5.1">R5.1 - Início Enchimento</option>
+          <option value="R5.3">R5.3 - 50% Enchimento</option>
+          <option value="R5.5">R5.5 - 100% Enchimento</option>
+          <option value="R6">R6 - Grãos Formados</option>
+          <option value="R7">R7 - Início Maturação</option>
+          <option value="R8">R8 - Maturação Plena</option>
+        </select>
+      </div>
+      <div class="stage-display" id="stageDisplay">
+        <div class="stage-icon-large" id="stageIcon"></div>
+        <div class="stage-name-large" id="stageName"></div>
+        <div class="stage-description-large" id="stageDescription"></div>
+        <div class="dap-badge" id="stageDap"></div>
+      </div>
+      <div class="attention-points" id="attentionPoints" style="display: none;">
+        <h3>⚠️ Pontos de Atenção</h3>
+        <ul id="attentionList"></ul>
+      </div>
     </div>
 
-    <div class="modal" id="photoCategoryModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Categoria da Foto</div>
-                <div class="modal-subtitle">Selecione a categoria</div>
-            </div>
-            <div class="modal-options">
-                <div class="modal-option" onclick="selectPhotoCategory('doenca')">
-                    <div class="modal-option-icon">🦠</div>
-                    <div class="modal-option-name">Doença</div>
-                </div>
-                <div class="modal-option" onclick="selectPhotoCategory('insetos')">
-                    <div class="modal-option-icon">🐛</div>
-                    <div class="modal-option-name">Insetos</div>
-                </div>
-                <div class="modal-option" onclick="selectPhotoCategory('ervas')">
-                    <div class="modal-option-icon">🌾</div>
-                    <div class="modal-option-name">Ervas Daninhas</div>
-                </div>
-                <div class="modal-option" onclick="selectPhotoCategory('nutrientes')">
-                    <div class="modal-option-icon">Ⓝ</div>
-                    <div class="modal-option-name">Nutrientes</div>
-                </div>
-                <div class="modal-option" onclick="selectPhotoCategory('agua')">
-                    <div class="modal-option-icon">💧</div>
-                    <div class="modal-option-name">Água</div>
-                </div>
-                <div class="modal-option" onclick="selectPhotoCategory('geral')">
-                    <div class="modal-option-icon">🌾</div>
-                    <div class="modal-option-name">Geral da Lavoura</div>
-                </div>
-            </div>
-            <div class="modal-cancel" onclick="closeAllModals()">Cancelar</div>
-        </div>
+    <!-- Categoria -->
+    <div class="section">
+      <div class="section-title">Categoria</div>
+      <div class="category-grid">
+        <div class="category-item" onclick="toggleCategory('doenca')"><div class="category-circle doenca">🦠</div><div class="category-name">Doença</div></div>
+        <div class="category-item" onclick="toggleCategory('insetos')"><div class="category-circle insetos">🐛</div><div class="category-name">Insetos</div></div>
+        <div class="category-item" onclick="toggleCategory('ervas')"><div class="category-circle ervas">🌾</div><div class="category-name">Ervas daninhas</div></div>
+        <div class="category-item" onclick="toggleCategory('nutrientes')"><div class="category-circle nutrientes">Ⓝ</div><div class="category-name">Nutrientes</div></div>
+        <div class="category-item" onclick="toggleCategory('agua')"><div class="category-circle agua">💧</div><div class="category-name">Água</div></div>
+      </div>
     </div>
 
-    <div class="modal" id="photoModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Classificar Foto</div>
-                <div class="modal-subtitle">Qual o tipo desta foto?</div>
-            </div>
-            <div class="modal-options">
-                <div class="modal-option" onclick="selectPhotoType('geral')">
-                    <div class="modal-option-icon">🌾</div>
-                    <div class="modal-option-name">Foto Geral da Lavoura</div>
-                </div>
-                <div class="modal-option" onclick="selectPhotoType('detalhe')">
-                    <div class="modal-option-icon">🔍</div>
-                    <div class="modal-option-name">Detalhe da Planta</div>
-                </div>
-                <div class="modal-option" onclick="selectPhotoType('problema')">
-                    <div class="modal-option-icon">⚠️</div>
-                    <div class="modal-option-name">Problema Identificado</div>
-                </div>
-            </div>
-            <div class="modal-cancel" onclick="closeAllModals()">Cancelar</div>
-        </div>
+    <div id="problemsContainer"></div>
+
+    <!-- Fotos -->
+    <div class="section">
+      <div class="section-title">Fotos</div>
+      <div class="add-item" onclick="openPhotoCategories()">
+        <div class="add-item-icon">📷</div>
+        <div class="add-item-text">Adicionar Foto</div>
+      </div>
+      <div class="photo-size-selector">
+        <label>Tamanho no PDF:</label>
+        <select id="photoSizeSelect">
+          <option value="small">Pequena</option>
+          <option value="medium" selected>Média</option>
+          <option value="large">Grande</option>
+        </select>
+      </div>
+      <div class="photos-list" id="photosList"></div>
     </div>
 
-    <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto()">
+    <!-- Observações, Recomendações, etc -->
+    <div class="section"><div class="section-title">Observações</div><div class="form-row"><textarea id="observacoes" placeholder="Observações gerais sobre a lavoura..."></textarea></div></div>
+    <div class="section"><div class="section-title">Recomendações</div><div class="form-row"><textarea id="recomendacoes" placeholder="Recomendações técnicas..."></textarea></div></div>
+    <div class="section"><div class="section-title">Responsável</div><div class="form-row"><input type="text" id="tecnico" placeholder="Nome do técnico"></div></div>
+    <div class="section">
+      <div class="section-title">Localização</div>
+      <div class="form-row"><label>Coordenadas</label><input type="text" id="coordenadas" placeholder="Pin" readonly></div>
+      <div style="padding:12px 0;color:#007AFF;cursor:pointer;font-size:.95em;" onclick="getCurrentLocation()">📍 Definir para minha localização atual</div>
+    </div>
+    <div class="section">
+      <div class="section-title">Tipo de Ocorrência</div>
+      <div style="display:flex;gap:30px;padding:12px 0;">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:none;"><input type="radio" name="tipo" value="sazonal" id="sazonal" checked style="width:20px;height:20px;"><span>Sazonal</span></label>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:none;"><input type="radio" name="tipo" value="permanente" id="permanente" style="width:20px;height:20px;"><span>Permanente</span></label>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Amostras</div>
+      <div style="padding:12px 0;"><label style="display:flex;align-items:center;gap:12px;cursor:pointer;"><input type="checkbox" id="amostraSolo" style="width:22px;height:22px;cursor:pointer;"><span style="font-size:1em;color:#1d1d1f;">Amostra de solo</span></label></div>
+    </div>
+  </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Modais -->
+<div class="modal" id="photoCategoryModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Categoria da Foto</div>
+      <div class="modal-subtitle">Selecione a categoria</div>
+    </div>
+    <div class="modal-options">
+      <div class="modal-option" onclick="selectPhotoCategory('doenca')"><div class="modal-option-icon">🦠</div><div class="modal-option-name">Doença</div></div>
+      <div class="modal-option" onclick="selectPhotoCategory('insetos')"><div class="modal-option-icon">🐛</div><div class="modal-option-name">Insetos</div></div>
+      <div class="modal-option" onclick="selectPhotoCategory('ervas')"><div class="modal-option-icon">🌾</div><div class="modal-option-name">Ervas Daninhas</div></div>
+      <div class="modal-option" onclick="selectPhotoCategory('nutrientes')"><div class="modal-option-icon">Ⓝ</div><div class="modal-option-name">Nutrientes</div></div>
+      <div class="modal-option" onclick="selectPhotoCategory('agua')"><div class="modal-option-icon">💧</div><div class="modal-option-name">Água</div></div>
+      <div class="modal-option" onclick="selectPhotoCategory('geral')"><div class="modal-option-icon">🌾</div><div class="modal-option-name">Geral da Lavoura</div></div>
+    </div>
+    <div class="modal-cancel" onclick="closeAllModals()">Cancelar</div>
+  </div>
+</div>
 
-    <script>
-        const stages = {
-            'VE': { 
-                icon: '🌱', 
-                name: 'VE - Emergência', 
-                description: 'Cotilédones rompem o solo', 
-                dap: '0 DAP',
-                attention: [
-                    'Absorção de água: mínimo 50% do peso da semente',
-                    'Temperatura ideal do solo: 20-30°C',
-                    'Estabelecimento radicular e fixação biológica de N₂',
-                    'Formação inicial de botões florais'
-                ] 
-            },
-            'VC': { 
-                icon: '🌿', 
-                name: 'VC - Cotilédones', 
-                description: 'Cotilédones totalmente abertos', 
-                dap: '3 DAP',
-                attention: [
-                    'Planta utiliza reservas dos cotilédones',
-                    'Controle de plantas daninhas é crítico',
-                    'Desenvolvimento do sistema radicular',
-                    'Início da colonização por bradyrhizobium'
-                ] 
-            },
-            'V1': { 
-                icon: '🍃', 
-                name: 'V1 - 1ª Trifoliolada', 
-                description: 'Primeira folha trifoliolada completamente desenvolvida', 
-                dap: '8 DAP',
-                attention: [
-                    'Fotossíntese sustenta o crescimento (independência dos cotilédones)',
-                    'Nova folha a cada 5 dias até V5',
-                    'Fixação biológica de N₂ em desenvolvimento',
-                    'Monitoramento de pragas iniciais (lagarta e pulgão)'
-                ] 
-            },
-            'V2': { 
-                icon: '🍃', 
-                name: 'V2 - 2ª Trifoliolada', 
-                description: 'Segunda folha trifoliolada', 
-                dap: '13 DAP',
-                attention: [
-                    'Crescimento vegetativo intenso',
-                    'Aumento da demanda nutricional',
-                    'Controle de plantas daninhas',
-                    'Interceptação de luz aumentando'
-                ] 
-            },
-            'V3': { 
-                icon: '🍃', 
-                name: 'V3 - 3ª Trifoliolada', 
-                description: 'Terceira folha trifoliolada', 
-                dap: '18 DAP',
-                attention: [
-                    'Período crítico para competição com daninhas',
-                    'Crescimento radicular ativo',
-                    'Demanda hídrica aumentando',
-                    'Posicionamento de reguladores de crescimento'
-                ] 
-            },
-            'V4': { 
-                icon: '🍃', 
-                name: 'V4 - 4ª Trifoliolada', 
-                description: 'Quarta folha trifoliolada', 
-                dap: '20-25 DAP',
-                attention: [
-                    'Máximo crescimento vegetativo',
-                    'Alta demanda de água e nutrientes',
-                    'Controle de pragas (lagartas, percevejos)',
-                    'Arquitetura de planta definindo potencial produtivo'
-                ] 
-            },
-            'V5': { 
-                icon: '🌿', 
-                name: 'V5 - 5ª Trifoliolada', 
-                description: 'Quinta folha trifoliolada', 
-                dap: '25-30 DAP',
-                attention: [
-                    'A partir daqui: nova folha a cada 3 dias',
-                    'Preparação para fase reprodutiva',
-                    'Controle fitossanitário intensivo',
-                    'Auxinas em alta concentração (crescimento)'
-                ] 
-            },
-            'R1': { 
-                icon: '🌸', 
-                name: 'R1 - Florescimento', 
-                description: 'Uma flor aberta em qualquer nó da haste', 
-                dap: '35-45 DAP',
-                attention: [
-                    'Início da fase reprodutiva (fotoperíodo crítico)',
-                    'Déficit hídrico extremamente crítico',
-                    'Boro essencial para formação do tubo polínico',
-                    'Estresse térmico pode causar abortamento de flores',
-                    'Intensificar fotossíntese para produção de reservas'
-                ] 
-            },
-            'R2': { 
-                icon: '🌼', 
-                name: 'R2 - Floração Plena', 
-                description: 'Flor aberta no terço superior da planta', 
-                dap: '50-60 DAP',
-                attention: [
-                    'Pleno florescimento da cultura',
-                    'Máxima demanda hídrica (5-7 mm/dia)',
-                    'Estresse térmico crítico para abortamento',
-                    'Etileno e ácido abscísico induzem queda de flores',
-                    'Controle de pragas desfolhadoras'
-                ] 
-            },
-            'R3': { 
-                icon: '🫘', 
-                name: 'R3 - Formação de Vagens', 
-                description: 'Vagem com 1cm em um dos 4 últimos nós', 
-                dap: '60-70 DAP',
-                attention: [
-                    'Formação inicial das vagens',
-                    'Translocação de fotoassimilados para vagens',
-                    'Número potencial de vagens definindo',
-                    'Monitoramento de percevejos intensificado'
-                ] 
-            },
-            'R4': { 
-                icon: '🫘', 
-                name: 'R4 - Vagens Desenvolvidas', 
-                description: 'Vagem com 2cm em um dos 4 últimos nós', 
-                dap: '70-80 DAP',
-                attention: [
-                    'Vagens em pleno desenvolvimento',
-                    'Componente de produtividade: número de vagens',
-                    'Percevejos causam grande impacto',
-                    'Nutrição foliar para sustentação'
-                ] 
-            },
-            'R5.1': { 
-                icon: '🫛', 
-                name: 'R5.1 - Início Enchimento', 
-                description: 'Grãos com 10% de granação', 
-                dap: '80-90 DAP',
-                attention: [
-                    'Início do enchimento de grãos',
-                    'Máximo desenvolvimento de área foliar e raízes',
-                    'Fixação de N₂ no máximo',
-                    'Translocação via fluxo de seiva (5-7 mm/dia)',
-                    'Déficit hídrico reduz duração do período'
-                ] 
-            },
-            'R5.3': { 
-                icon: '🫛', 
-                name: 'R5.3 - Enchimento 50%', 
-                description: 'Grãos com 50% de granação', 
-                dap: '90-100 DAP',
-                attention: [
-                    'Enchimento de grãos acelerado',
-                    'Período crítico para estresses',
-                    'Percevejos afetam qualidade dos grãos',
-                    'Lagartas reduzem área fotossintética'
-                ] 
-            },
-            'R5.5': { 
-                icon: '🫛', 
-                name: 'R5.5 - Enchimento Completo', 
-                description: 'Grãos com 100% de granação', 
-                dap: '100-110 DAP',
-                attention: [
-                    'Grãos completamente cheios',
-                    'Máximo acúmulo de matéria seca nos grãos',
-                    'Controle de percevejos ainda necessário',
-                    'Preparação para maturação'
-                ] 
-            },
-            'R6': { 
-                icon: '🫘', 
-                name: 'R6 - Grãos Formados', 
-                description: 'Vagem com grãos verdes preenchendo cavidade', 
-                dap: '105-115 DAP',
-                attention: [
-                    'Máxima matéria seca acumulada',
-                    'Plantas não absorvem mais água e nutrientes',
-                    'Percevejos afetam germinação e vigor',
-                    'Monitoramento para produção de sementes'
-                ] 
-            },
-            'R7': { 
-                icon: '🌾', 
-                name: 'R7 - Início Maturação', 
-                description: 'Uma vagem madura na haste principal', 
-                dap: '110-120 DAP',
-                attention: [
-                    'Início da senescência',
-                    'Degradação de clorofila e proteínas',
-                    'Etileno e ácido abscísico regulam senescência',
-                    'Mobilização de reservas para grãos',
-                    'Atenção ao momento de dessecação'
-                ] 
-            },
-            'R8': { 
-                icon: '🌾', 
-                name: 'R8 - Maturação Plena', 
-                description: '95% das vagens maduras', 
-                dap: '115-130 DAP',
-                attention: [
-                    'Maturação completa (fim do ciclo biológico)',
-                    'Umidade ideal para colheita: 13-15%',
-                    'Evitar danos mecânicos na colheita',
-                    'Perda de folhas completa',
-                    'Sementes com todas as partes formadas'
-                ] 
-            }
-        };
+<div class="modal" id="photoModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">Classificar Foto</div>
+      <div class="modal-subtitle">Qual o tipo desta foto?</div>
+    </div>
+    <div class="modal-options">
+      <div class="modal-option" onclick="selectPhotoType('geral')"><div class="modal-option-icon">🌾</div><div class="modal-option-name">Foto Geral da Lavoura</div></div>
+      <div class="modal-option" onclick="selectPhotoType('detalhe')"><div class="modal-option-icon">🔍</div><div class="modal-option-name">Detalhe da Planta</div></div>
+      <div class="modal-option" onclick="selectPhotoType('problema')"><div class="modal-option-icon">⚠️</div><div class="modal-option-name">Problema Identificado</div></div>
+    </div>
+    <div class="modal-cancel" onclick="closeAllModals()">Cancelar</div>
+  </div>
+</div>
 
-        const categories = {
-            'doenca': { 
-                icon: '🦠', 
-                title: 'Doença', 
-                type: 'multi',
-                levels: [
-                    { id: 'incidencia', name: 'Incidência' },
-                    { id: 'severidade', name: 'Severidade' }
-                ]
-            },
-            'insetos': { 
-                icon: '🐛', 
-                title: 'Insetos', 
-                type: 'multi',
-                levels: [
-                    { id: 'desfolha', name: 'Desfolha' },
-                    { id: 'infestacao', name: 'Taxa de Infestação' },
-                    { id: 'acamamento', name: 'Acamamento' }
-                ]
-            },
-            'ervas': { icon: '🌾', title: 'Ervas Daninhas', type: 'standard' },
-            'nutrientes': { 
-                icon: 'Ⓝ', 
-                title: 'Nutrientes', 
-                type: 'nutrients',
-                options: [
-                    { id: 'N', name: 'Nitrogênio (N)', icon: 'N' },
-                    { id: 'P', name: 'Fósforo (P)', icon: 'P' },
-                    { id: 'K', name: 'Potássio (K)', icon: 'K' },
-                    { id: 'Ca', name: 'Cálcio (Ca)', icon: 'Ca' },
-                    { id: 'Mg', name: 'Magnésio (Mg)', icon: 'Mg' },
-                    { id: 'S', name: 'Enxofre (S)', icon: 'S' },
-                    { id: 'B', name: 'Boro (B)', icon: 'B' },
-                    { id: 'Zn', name: 'Zinco (Zn)', icon: 'Zn' },
-                    { id: 'Fe', name: 'Ferro (Fe)', icon: 'Fe' },
-                    { id: 'Mn', name: 'Manganês (Mn)', icon: 'Mn' },
-                    { id: 'Cu', name: 'Cobre (Cu)', icon: 'Cu' },
-                    { id: 'Mo', name: 'Molibdênio (Mo)', icon: 'Mo' }
-                ]
-            },
-            'agua': { icon: '💧', title: 'Água', type: 'water' },
-            'outro': { icon: '✓', title: 'Outro', type: 'standard' }
-        };
+<input type="file" id="photoInput" accept="image/*" onchange="handlePhoto()">
 
-        const photoTypes = {
-            'geral': { icon: '🌾', name: 'Foto Geral' },
-            'detalhe': { icon: '🔍', name: 'Detalhe' },
-            'problema': { icon: '⚠️', name: 'Problema' }
-        };
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// --- DADOS ---
+const stages = {
+  "VE": { icon: "🌱", name: "Emergência", description: "Primeiras folhas emergem do solo", dapRange: "0-5" },
+  "VC": { icon: "🌿", name: "Cotilédones", description: "Folhas cotiledonares expandidas", dapRange: "5-8" },
+  "V1": { icon: "🌿", name: "1ª Trifoliolada", description: "Primeira folha trifoliolada totalmente expandida", dapRange: "8-12" },
+  "V2": { icon: "🌿", name: "2ª Trifoliolada", description: "Segunda folha trifoliolada expandida", dapRange: "12-16" },
+  "V3": { icon: "🌿", name: "3ª Trifoliolada", description: "Terceira folha trifoliolada expandida", dapRange: "16-20" },
+  "V4": { icon: "🌿", name: "4ª Trifoliolada", description: "Quarta folha trifoliolada expandida", dapRange: "20-24" },
+  "V5": { icon: "🌿", name: "5ª Trifoliolada", description: "Quinta folha trifoliolada expandida", dapRange: "24-28" },
+  "R1": { icon: "🌼", name: "Florescimento", description: "Primeiras flores abertas", dapRange: "28-35" },
+  "R2": { icon: "🌼", name: "Floração Plena", description: "Pico de floração", dapRange: "35-42" },
+  "R3": { icon: "🌱", name: "Vagens 1cm", description: "Vagens com 5mm a 1cm", dapRange: "42-50" },
+  "R4": { icon: "🌱", name: "Vagens 2cm", description: "Vagens com 2cm", dapRange: "50-58" },
+  "R5.1": { icon: "🌱", name: "Início Enchimento", description: "Grãos começam a se formar", dapRange: "58-65" },
+  "R5.3": { icon: "🌱", name: "50% Enchimento", description: "Grãos atingem metade do tamanho", dapRange: "65-72" },
+  "R5.5": { icon: "🌱", name: "100% Enchimento", description: "Grãos atingem tamanho máximo", dapRange: "72-78" },
+  "R6": { icon: "🌱", name: "Grãos Formados", description: "Grãos totalmente formados", dapRange: "78-85" },
+  "R7": { icon: "🍂", name: "Início Maturação", description: "Primeiras folhas amarelam", dapRange: "85-95" },
+  "R8": { icon: "🍂", name: "Maturação Plena", description: "Plantas senescentes, colheita possível", dapRange: "95+" }
+};
 
-        let selectedCategories = new Set();
-        let severityData = {};
-        let photos = [];
-        let pendingPhoto = null;
-        let pendingPhotoCategory = null;
-        let selectedNutrients = new Set();
+const categories = {
+  "doenca": { icon: "🦠", name: "Doença", nutrients: null },
+  "insetos": { icon: "🐛", name: "Insetos/Ácaros", nutrients: null },
+  "ervas": { icon: "🌾", name: "Ervas Daninhas", nutrients: null },
+  "nutrientes": {
+    icon: "Ⓝ",
+    name: "Deficiência Nutricional",
+    nutrients: ["N", "P", "K", "Ca", "Mg", "S", "Fe", "Mn", "Zn", "Cu", "B", "Mo"]
+  },
+  "agua": { icon: "💧", name: "Problema Hídrico", nutrients: null }
+};
 
-        function showStageInfo() {
-            const code = document.getElementById('stageSelect').value;
-            if (code && stages[code]) {
-                const stage = stages[code];
-                document.getElementById('stageDisplay').classList.add('active');
-                document.getElementById('stageIcon').textContent = stage.icon;
-                document.getElementById('stageName').textContent = stage.name;
-                document.getElementById('stageDescription').textContent = stage.description;
-                document.getElementById('stageDap').textContent = stage.dap;
-                
-                const attention = document.getElementById('attentionPoints');
-                attention.style.display = 'block';
-                document.getElementById('attentionList').innerHTML = stage.attention.map(a => `<li>${a}</li>`).join('');
-            } else {
-                document.getElementById('stageDisplay').classList.remove('active');
-                document.getElementById('attentionPoints').style.display = 'none';
-            }
-        }
+const photoTypes = {
+  'geral': { icon: '🌾', name: 'Foto Geral' },
+  'detalhe': { icon: '🔍', name: 'Detalhe' },
+  'problema': { icon: '⚠️', name: 'Problema' }
+};
 
-        function toggleCategory(id) {
-            const item = event.currentTarget;
-            if (selectedCategories.has(id)) {
-                selectedCategories.delete(id);
-                item.classList.remove('selected');
-            } else {
-                selectedCategories.add(id);
-                item.classList.add('selected');
-            }
-            renderProblems();
-        }
+// --- STATE ---
+let selectedCategories = new Set();
+let severityData = {};
+let photos = [];
+let pendingPhoto = null;
+let pendingPhotoCategory = null;
+let selectedNutrients = new Set();
 
-        function renderProblems() {
-            const container = document.getElementById('problemsContainer');
-            container.innerHTML = '';
-            
-            Array.from(selectedCategories).forEach(id => {
-                const cat = categories[id];
-                const div = document.createElement('div');
-                div.className = 'section';
-                
-                if (cat.type === 'multi') {
-                    let levelsHTML = '';
-                    cat.levels.forEach(level => {
-                        levelsHTML += `
-                            <div style="margin-bottom: 20px;">
-                                <div style="font-size: 0.9em; color: #1d1d1f; margin-bottom: 8px; font-weight: 500;">${level.name}</div>
-                                <div class="severity-grid">
-                                    <div class="severity-option nenhum" onclick="selectSeverity('${id}', '${level.id}', 'nenhum', this)">Nenhum</div>
-                                    <div class="severity-option baixa" onclick="selectSeverity('${id}', '${level.id}', 'baixa', this)">Baixa</div>
-                                    <div class="severity-option media" onclick="selectSeverity('${id}', '${level.id}', 'média', this)">Médio</div>
-                                    <div class="severity-option alta" onclick="selectSeverity('${id}', '${level.id}', 'alta', this)">Alta</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    
-                    div.innerHTML = `
-                        <div class="problem-header">
-                            <div class="problem-icon-large">${cat.icon}</div>
-                            <div class="problem-title">${cat.title}</div>
-                        </div>
-                        ${levelsHTML}
-                    `;
-                } else if (cat.type === 'nutrients') {
-                    let nutrientsHTML = cat.options.map(nut => `
-                        <div class="nutrient-badge ${selectedNutrients.has(nut.id) ? 'selected' : ''}" 
-                             onclick="toggleNutrient('${nut.id}', this)">
-                            <div class="nutrient-badge-icon">${nut.icon}</div>
-                            <div class="nutrient-badge-name">${nut.name}</div>
-                        </div>
-                    `).join('');
-                    
-                    div.innerHTML = `
-                        <div class="problem-header">
-                            <div class="problem-icon-large">${cat.icon}</div>
-                            <div class="problem-title">Nutrientes Deficientes</div>
-                        </div>
-                        <div class="nutrient-grid">
-                            ${nutrientsHTML}
-                        </div>
-                    `;
-                } else if (cat.type === 'standard') {
-                    div.innerHTML = `
-                        <div class="problem-header">
-                            <div class="problem-icon-large">${cat.icon}</div>
-                            <div class="problem-title">${cat.title}</div>
-                        </div>
-                        <div class="severity-grid">
-                            <div class="severity-option nenhum" onclick="selectSeverity('${id}', 'main', 'nenhum', this)">Nenhum</div>
-                            <div class="severity-option baixa" onclick="selectSeverity('${id}', 'main', 'baixa', this)">Baixa</div>
-                            <div class="severity-option media" onclick="selectSeverity('${id}', 'main', 'média', this)">Média</div>
-                            <div class="severity-option alta" onclick="selectSeverity('${id}', 'main', 'alta', this)">Alta</div>
-                        </div>
-                    `;
-                } else {
-                    div.innerHTML = `
-                        <div class="problem-header">
-                            <div class="problem-icon-large">${cat.icon}</div>
-                            <div class="problem-title">${cat.title}</div>
-                        </div>
-                        <div class="severity-grid">
-                            <div class="severity-option" onclick="selectSeverity('${id}', 'main', 'adequado', this)">Adequado</div>
-                            <div class="severity-option" onclick="selectSeverity('${id}', 'main', 'seco', this)">Seco</div>
-                            <div class="severity-option" onclick="selectSeverity('${id}', 'main', 'excesso', this)">Excesso</div>
-                        </div>
-                    `;
-                }
-                
-                container.appendChild(div);
-            });
-        }
+// --- UTILS ---
+const saveToStorage = () => {
+  const data = {
+    produtor: document.getElementById('produtor').value,
+    propriedade: document.getElementById('propriedade').value,
+    data: document.getElementById('data').value,
+    area: document.getElementById('area').value,
+    cultivar: document.getElementById('cultivar').value,
+    plantio: document.getElementById('plantio').value,
+    dapValue: document.getElementById('dapValue').textContent,
+    stageSelect: document.getElementById('stageSelect').value,
+    observacoes: document.getElementById('observacoes').value,
+    recomendacoes: document.getElementById('recomendacoes').value,
+    tecnico: document.getElementById('tecnico').value,
+    coordenadas: document.getElementById('coordenadas').value,
+    tipo: document.querySelector('input[name="tipo"]:checked').value,
+    amostraSolo: document.getElementById('amostraSolo').checked,
+    selectedCategories: Array.from(selectedCategories),
+    severityData,
+    selectedNutrients: Array.from(selectedNutrients),
+    photos,
+    photoSize: document.getElementById('photoSizeSelect').value
+  };
+  localStorage.setItem('relatorio-visita', JSON.stringify(data));
+};
 
-        function toggleNutrient(nutrientId, el) {
-            if (selectedNutrients.has(nutrientId)) {
-                selectedNutrients.delete(nutrientId);
-                el.classList.remove('selected');
-            } else {
-                selectedNutrients.add(nutrientId);
-                el.classList.add('selected');
-            }
-        }
+const loadFromStorage = () => {
+  const saved = localStorage.getItem('relatorio-visita');
+  if (!saved) return;
 
-        function selectSeverity(cat, levelId, value, el) {
-            el.parentElement.querySelectorAll('.severity-option').forEach(o => o.classList.remove('selected'));
-            el.classList.add('selected');
-            
-            if (!severityData[cat]) {
-                severityData[cat] = {};
-            }
-            severityData[cat][levelId] = value;
-        }
+  const data = JSON.parse(saved);
+  document.getElementById('produtor').value = data.produtor || '';
+  document.getElementById('propriedade').value = data.propriedade || '';
+  document.getElementById('data').value = data.data || '';
+  document.getElementById('area').value = data.area || '';
+  document.getElementById('cultivar').value = data.cultivar || '';
+  document.getElementById('plantio').value = data.plantio || '';
 
-        function openPhotoCategories() {
-            document.getElementById('photoCategoryModal').classList.add('active');
-        }
+  if (data.plantio && data.data) {
+    const p = new Date(data.plantio);
+    const v = new Date(data.data);
+    if (!isNaN(p.getTime()) && !isNaN(v.getTime())) {
+      const dap = Math.floor((v - p) / (1000 * 60 * 60 * 24));
+      document.getElementById('dapValue').textContent = dap;
+      document.getElementById('dapInfo').style.display = 'block';
+    }
+  }
 
-        function selectPhotoCategory(category) {
-            pendingPhotoCategory = category;
-            closeAllModals();
-            document.getElementById('photoInput').click();
-        }
+  document.getElementById('observacoes').value = data.observacoes || '';
+  document.getElementById('recomendacoes').value = data.recomendacoes || '';
+  document.getElementById('tecnico').value = data.tecnico || '';
+  document.getElementById('coordenadas').value = data.coordenadas || '';
+  document.getElementById('sazonal').checked = data.tipo === 'sazonal';
+  document.getElementById('permanente').checked = data.tipo === 'permanente';
+  document.getElementById('amostraSolo').checked = data.amostraSolo || false;
 
-        function openCamera() {
-            document.getElementById('photoInput').click();
-        }
+  selectedCategories = new Set(data.selectedCategories || []);
+  severityData = data.severityData || {};
+  selectedNutrients = new Set(data.selectedNutrients || []);
+  photos = data.photos || [];
+  document.getElementById('photoSizeSelect').value = data.photoSize || 'medium';
 
-        function handlePhoto() {
-            const input = document.getElementById('photoInput');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    pendingPhoto = e.target.result;
-                    document.getElementById('photoModal').classList.add('active');
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-            input.value = '';
-        }
+  document.getElementById('stageSelect').value = data.stageSelect || '';
+  if (data.stageSelect) showStageInfo();
 
-        function selectPhotoType(type) {
-            if (pendingPhoto && pendingPhotoCategory) {
-                let categoryData;
-                if (pendingPhotoCategory === 'geral') {
-                    categoryData = { icon: '🌾', title: 'Geral' };
-                } else {
-                    categoryData = categories[pendingPhotoCategory] || { icon: '📷', title: 'Geral' };
-                }
-                photos.push({ 
-                    id: Date.now(), 
-                    type, 
-                    category: pendingPhotoCategory,
-                    categoryIcon: categoryData.icon,
-                    categoryName: categoryData.title,
-                    data: pendingPhoto 
-                });
-                renderPhotos();
-            }
-            closeAllModals();
-            pendingPhoto = null;
-            pendingPhotoCategory = null;
-        }
+  // Atualiza UI das categorias
+  document.querySelectorAll('.category-item').forEach(el => {
+    const id = el.getAttribute('data-id');
+    if (id && selectedCategories.has(id)) {
+      el.classList.add('selected');
+    }
+  });
 
-        function closeAllModals() {
-            document.getElementById('photoModal').classList.remove('active');
-            document.getElementById('photoCategoryModal').classList.remove('active');
-            pendingPhoto = null;
-        }
+  renderProblems();
+  renderPhotos();
+};
 
-        function renderPhotos() {
-            const container = document.getElementById('photosList');
-            container.innerHTML = photos.map(p => {
-                const type = photoTypes[p.type];
-                return `
-                    <div class="photo-item">
-                        <div class="photo-item-header">
-                            <div class="photo-item-type">
-                                <span>${p.categoryIcon}</span>
-                                <span>${p.categoryName}</span>
-                                <span style="margin: 0 6px; color: #86868b;">•</span>
-                                <span style="color: #86868b; font-weight: 400;">${type.name}</span>
-                            </div>
-                            <button class="photo-item-remove" onclick="removePhoto(${p.id})">×</button>
-                        </div>
-                        <img src="${p.data}" class="photo-item-image">
-                    </div>
-                `;
-            }).join('');
-        }
+// Atribui data-id para seleção
+document.querySelectorAll('.category-item').forEach((el, i) => {
+  const ids = ['doenca','insetos','ervas','nutrientes','agua'];
+  el.setAttribute('data-id', ids[i]);
+});
 
-        function removePhoto(id) {
-            photos = photos.filter(p => p.id !== id);
-            renderPhotos();
-        }
+// --- EVENT LISTENERS ---
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    document.getElementById('data').valueAsDate = new Date();
+    // Tenta obter localização automaticamente
+    getCurrentLocation();
+  } catch (error) {
+    console.error('Erro ao inicializar:', error);
+  }
 
-        function calculateDAP() {
-            const plantio = document.getElementById('plantio').value;
-            const visita = document.getElementById('data').value;
-            
-            if (plantio && visita) {
-                const p = new Date(plantio);
-                const v = new Date(visita);
-                const dap = Math.floor((v - p) / (1000 * 60 * 60 * 24));
-                
-                document.getElementById('dapValue').textContent = dap;
-                document.getElementById('dapInfo').style.display = 'block';
-            }
-        }
+  // Carregar dados salvos
+  loadFromStorage();
 
-        function getCurrentLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        const lat = position.coords.latitude.toFixed(6);
-                        const lng = position.coords.longitude.toFixed(6);
-                        document.getElementById('coordenadas').value = `${lat}, ${lng}`;
-                    },
-                    function(error) {
-                        alert('Erro ao obter localização: ' + error.message);
-                    }
-                );
-            } else {
-                alert('Geolocalização não é suportada neste navegador');
-            }
-        }
+  // Auto-salvar em qualquer mudança
+  document.querySelectorAll('input, textarea, select, [type="radio"], [type="checkbox"]').forEach(el => {
+    el.addEventListener('input', saveToStorage);
+    el.addEventListener('change', saveToStorage);
+  });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            try {
-                document.getElementById('data').valueAsDate = new Date();
-            } catch (error) {
-                console.error('Error initializing date:', error);
-            }
+  // Salvar ao fechar
+  window.addEventListener('beforeunload', saveToStorage);
+});
+
+// --- FUNÇÕES PRINCIPAIS ---
+function showStageInfo() {
+  const stageKey = document.getElementById('stageSelect').value;
+  const stageInfo = stages[stageKey];
+  const stageDisplay = document.getElementById('stageDisplay');
+  if (stageInfo) {
+    document.getElementById('stageIcon').textContent = stageInfo.icon;
+    document.getElementById('stageName').textContent = stageInfo.name;
+    document.getElementById('stageDescription').textContent = stageInfo.description;
+    document.getElementById('stageDap').textContent = `DAP: ${stageInfo.dapRange}`;
+    stageDisplay.classList.add('active');
+  } else {
+    stageDisplay.classList.remove('active');
+  }
+}
+
+function toggleCategory(id) {
+  const el = document.querySelector(`.category-item[data-id="${id}"]`);
+  if (selectedCategories.has(id)) {
+    selectedCategories.delete(id);
+    el.classList.remove('selected');
+  } else {
+    selectedCategories.add(id);
+    el.classList.add('selected');
+  }
+  renderProblems();
+  saveToStorage();
+}
+
+function renderProblems() {
+  const container = document.getElementById('problemsContainer');
+  container.innerHTML = '';
+
+  selectedCategories.forEach(catId => {
+    const cat = categories[catId];
+    if (!cat) return;
+
+    const problemDiv = document.createElement('div');
+    problemDiv.className = 'section';
+    problemDiv.innerHTML = `
+      <div class="problem-header">
+        <div class="problem-icon-large">${cat.icon}</div>
+        <div class="problem-title">${cat.name}</div>
+      </div>
+    `;
+
+    if (cat.nutrients) {
+      const nutrientGrid = document.createElement('div');
+      nutrientGrid.className = 'nutrient-grid';
+      cat.nutrients.forEach(nut => {
+        const nutrientDiv = document.createElement('div');
+        nutrientDiv.className = 'nutrient-badge' + (selectedNutrients.has(nut) ? ' selected' : '');
+        nutrientDiv.innerHTML = `<div class="nutrient-badge-icon">${nut}</div><div class="nutrient-badge-name">${nut}</div>`;
+        nutrientDiv.onclick = () => toggleNutrient(nut, nutrientDiv);
+        nutrientGrid.appendChild(nutrientDiv);
+      });
+      problemDiv.appendChild(nutrientGrid);
+    }
+
+    const severityDiv = document.createElement('div');
+    severityDiv.innerHTML = `<div class="section-title">Severidade</div>`;
+    const severityGrid = document.createElement('div');
+    severityGrid.className = 'severity-grid';
+    const levels = [
+      { id: 'nenhum', name: 'Nenhum' },
+      { id: 'baixa', name: 'Baixa' },
+      { id: 'media', name: 'Média' },
+      { id: 'alta', name: 'Alta' }
+    ];
+    levels.forEach(level => {
+      const btn = document.createElement('div');
+      btn.className = 'severity-option ' + level.id + (severityData[catId] === level.id ? ' selected' : '');
+      btn.textContent = level.name;
+      btn.onclick = () => selectSeverity(catId, level.id, level.name, btn);
+      severityGrid.appendChild(btn);
+    });
+    severityDiv.appendChild(severityGrid);
+    problemDiv.appendChild(severityDiv);
+
+    container.appendChild(problemDiv);
+  });
+}
+
+function toggleNutrient(nutrientId, el) {
+  if (selectedNutrients.has(nutrientId)) {
+    selectedNutrients.delete(nutrientId);
+    el.classList.remove('selected');
+  } else {
+    selectedNutrients.add(nutrientId);
+    el.classList.add('selected');
+  }
+  saveToStorage();
+}
+
+function selectSeverity(cat, levelId, value, el) {
+  // Remover seleção anterior
+  document.querySelectorAll(`.severity-option`).forEach(btn => {
+    if (btn.closest('.section') === el.closest('.section')) {
+      btn.classList.remove('selected');
+    }
+  });
+  el.classList.add('selected');
+  severityData[cat] = levelId;
+  saveToStorage();
+}
+
+function openPhotoCategories() {
+  document.getElementById('photoCategoryModal').classList.add('active');
+}
+
+function selectPhotoCategory(category) {
+  pendingPhotoCategory = category;
+  document.getElementById('photoCategoryModal').classList.remove('active');
+  document.getElementById('photoInput').click();
+}
+
+function handlePhoto() {
+  const fileInput = document.getElementById('photoInput');
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    pendingPhoto = e.target.result;
+    document.getElementById('photoModal').classList.add('active');
+  };
+  reader.readAsDataURL(file);
+  fileInput.value = '';
+}
+
+function selectPhotoType(type) {
+  const typeData = photoTypes[type];
+  photos.push({
+    id: Date.now(),
+    data: pendingPhoto,
+    category: pendingPhotoCategory,
+    categoryName: categories[pendingPhotoCategory]?.name || 'Geral',
+    type: type,
+    typeName: typeData.name
+  });
+  renderPhotos();
+  closeAllModals();
+  pendingPhoto = null;
+  pendingPhotoCategory = null;
+  saveToStorage();
+}
+
+function closeAllModals() {
+  document.getElementById('photoCategoryModal').classList.remove('active');
+  document.getElementById('photoModal').classList.remove('active');
+  pendingPhoto = null;
+  pendingPhotoCategory = null;
+}
+
+function renderPhotos() {
+  const list = document.getElementById('photosList');
+  list.innerHTML = '';
+  photos.forEach(photo => {
+    const item = document.createElement('div');
+    item.className = 'photo-item';
+    item.innerHTML = `
+      <div class="photo-item-header">
+        <div class="photo-item-type">
+          ${photo.categoryName} - ${photo.typeName}
+        </div>
+        <button class="photo-item-remove" onclick="removePhoto(${photo.id})">×</button>
+      </div>
+      <img src="${photo.data}" class="photo-item-image" />
+    `;
+    list.appendChild(item);
+  });
+}
+
+function removePhoto(id) {
+  photos = photos.filter(p => p.id !== id);
+  renderPhotos();
+  saveToStorage();
+}
+
+function calculateDAP() {
+  const plantio = document.getElementById('plantio').value;
+  const visita = document.getElementById('data').value;
+  if (plantio && visita) {
+    const p = new Date(plantio);
+    const v = new Date(visita);
+    if (!isNaN(p.getTime()) && !isNaN(v.getTime())) {
+      const dap = Math.floor((v - p) / (1000 * 60 * 60 * 24));
+      document.getElementById('dapValue').textContent = dap;
+      document.getElementById('dapInfo').style.display = 'block';
+      saveToStorage();
+    }
+  }
+}
+
+function getCurrentLocation() {
+  if (!navigator.geolocation) return;
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      const lat = position.coords.latitude.toFixed(6);
+      const lng = position.coords.longitude.toFixed(6);
+      document.getElementById('coordenadas').value = `${lat}, ${lng}`;
+      saveToStorage();
+    },
+    function(error) {
+      console.warn('Geolocalização não obtida:', error.message);
+    }
+  );
+}
+
+// --- EXPORTAÇÃO PDF ---
+async function exportToPDF() {
+  const loadingDiv = document.createElement('div');
+  loadingDiv.style.position = 'fixed';
+  loadingDiv.style.top = '0';
+  loadingDiv.style.left = '0';
+  loadingDiv.style.right = '0';
+  loadingDiv.style.bottom = '0';
+  loadingDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
+  loadingDiv.style.display = 'flex';
+  loadingDiv.style.justifyContent = 'center';
+  loadingDiv.style.alignItems = 'center';
+  loadingDiv.style.color = 'white';
+  loadingDiv.style.fontSize = '1.2em';
+  loadingDiv.style.zIndex = '10000';
+  loadingDiv.textContent = 'Gerando PDF...';
+  document.body.appendChild(loadingDiv);
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 15;
+    const contentWidth = pageWidth - (2 * margin);
+    let yPosition = 35;
+
+    const fontFamily = 'helvetica';
+    const addText = (text, x, y, size = 12, style = 'normal') => {
+      pdf.setFont(fontFamily, style);
+      pdf.setFontSize(size);
+      pdf.text(text, x, y);
+    };
+
+    const addSection = (title, content, isMultiline = false) => {
+      if (yPosition > 270) { pdf.addPage(); yPosition = 20; }
+      addText(title, margin, yPosition, 10, 'bold');
+      yPosition += 5;
+      if (isMultiline) {
+        const lines = pdf.splitTextToSize(content, contentWidth);
+        lines.forEach(line => {
+          if (yPosition > 270) { pdf.addPage(); yPosition = 20; }
+          addText(line, margin, yPosition, 10);
+          yPosition += 5;
         });
+        yPosition += 5;
+      } else {
+        addText(content || '—', margin + 35, yPosition, 10);
+        yPosition += 8;
+      }
+    };
 
-        window.addEventListener('error', function(e) {
-            console.error('Global error:', e.error || e.message);
-            return true;
-        });
+    // Cabeçalho
+    pdf.setFont(fontFamily, 'bold');
+    pdf.setFontSize(16);
+    pdf.text('RELATÓRIO DE VISITA AGRÍCOLA', pageWidth / 2, 20, null, null, 'center');
 
-        async function exportToPDF() {
-            try {
-                const loadingDiv = document.createElement('div');
-                loadingDiv.style.cssText = `
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background: rgba(0, 0, 0, 0.9);
-                    color: white;
-                    padding: 30px 50px;
-                    border-radius: 12px;
-                    z-index: 10000;
-                    font-size: 1.2em;
-                    text-align: center;
-                `;
-                loadingDiv.innerHTML = '📄 Gerando PDF...<br><span style="font-size: 0.8em; opacity: 0.8;">Aguarde</span>';
-                document.body.appendChild(loadingDiv);
+    // Informações da Visita
+    addText('Informações da Visita', margin, yPosition, 11, 'bold');
+    yPosition += 8;
+    addSection('Produtor:', document.getElementById('produtor').value);
+    addSection('Propriedade:', document.getElementById('propriedade').value);
+    addSection('Data da Visita:', document.getElementById('data').value);
+    addSection('Área (ha):', document.getElementById('area').value);
+    addSection('Cultivar:', document.getElementById('cultivar').value);
+    addSection('Data de Plantio:', document.getElementById('plantio').value);
+    addSection('DAP:', document.getElementById('dapValue').textContent + ' dias');
 
-                if (typeof window.jspdf === 'undefined') {
-                    throw new Error('jsPDF não carregado');
-                }
+    // Estádio Fenológico
+    const stageKey = document.getElementById('stageSelect').value;
+    if (stageKey) {
+      const stage = stages[stageKey];
+      addText('Estádio Fenológico', margin, yPosition, 11, 'bold');
+      yPosition += 8;
+      addSection('Estádio:', `${stage.name} (${stage.dapRange} DAP)`);
+      if (stage.description) addSection('Descrição:', stage.description);
+    }
 
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-                const margin = 15;
-                const contentWidth = pageWidth - (2 * margin);
-                let yPosition = margin;
-
-                function checkNewPage(requiredSpace) {
-                    if (yPosition + requiredSpace > pageHeight - margin) {
-                        pdf.addPage();
-                        yPosition = margin;
-                        return true;
-                    }
-                    return false;
-                }
-
-                // Header
-                pdf.setFillColor(28, 28, 30);
-                pdf.rect(0, 0, pageWidth, 25, 'F');
-                pdf.setTextColor(255, 255, 255);
-                pdf.setFontSize(18);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('Relatório de Visita Agrícola', pageWidth / 2, 15, { align: 'center' });
-                
-                yPosition = 35;
-
-                // Get data
-                const produtor = document.getElementById('produtor').value || 'Não informado';
-                const propriedade = document.getElementById('propriedade').value || 'Não informado';
-                const data = document.getElementById('data').value || 'Não informado';
-                const area = document.getElementById('area').value || 'Não informado';
-                const cultivar = document.getElementById('cultivar').value || 'Não informado';
-                const plantio = document.getElementById('plantio').value || 'Não informado';
-                const dapValue = document.getElementById('dapValue').textContent || '0';
-                const stageSelect = document.getElementById('stageSelect');
-                const selectedStage = stageSelect.options[stageSelect.selectedIndex].text || 'Não informado';
-                const observacoes = document.getElementById('observacoes').value || 'Nenhuma';
-                const recomendacoes = document.getElementById('recomendacoes').value || 'Nenhuma';
-                const tecnico = document.getElementById('tecnico').value || 'Não informado';
-                const coordenadas = document.getElementById('coordenadas').value || 'Não informado';
-                const tipo = document.querySelector('input[name="tipo"]:checked').value || 'Não informado';
-                const amostraSolo = document.getElementById('amostraSolo').checked ? 'Sim' : 'Não';
-
-                // Section: Informações da Visita
-                pdf.setTextColor(0, 0, 0);
-                pdf.setFontSize(14);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('INFORMAÇÕES DA VISITA', margin, yPosition);
-                yPosition += 8;
-
-                pdf.setFontSize(10);
-                pdf.setFont(undefined, 'normal');
-                const infoLines = [
-                    `Produtor: ${produtor}`,
-                    `Propriedade: ${propriedade}`,
-                    `Data da Visita: ${data}`,
-                    `Área: ${area} ha`,
-                    `Cultivar: ${cultivar}`,
-                    `Data do Plantio: ${plantio}`,
-                    `DAP: ${dapValue} dias`
-                ];
-
-                infoLines.forEach(line => {
-                    checkNewPage(7);
-                    pdf.text(line, margin, yPosition);
-                    yPosition += 6;
-                });
-
-                yPosition += 5;
-
-                // Section: Estádio Fenológico
-                checkNewPage(20);
-                pdf.setFontSize(14);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('ESTÁDIO FENOLÓGICO', margin, yPosition);
-                yPosition += 8;
-
-                pdf.setFontSize(10);
-                pdf.setFont(undefined, 'normal');
-                pdf.text(`Estádio: ${selectedStage}`, margin, yPosition);
-                yPosition += 6;
-
-                const stageCode = document.getElementById('stageSelect').value;
-                if (stageCode && stages[stageCode]) {
-                    yPosition += 2;
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text('Pontos de Atenção:', margin, yPosition);
-                    yPosition += 6;
-                    pdf.setFont(undefined, 'normal');
-                    
-                    stages[stageCode].attention.forEach(point => {
-                        checkNewPage(7);
-                        const lines = pdf.splitTextToSize(`• ${point}`, contentWidth - 5);
-                        lines.forEach(line => {
-                            checkNewPage(5);
-                            pdf.text(line, margin + 2, yPosition);
-                            yPosition += 5;
-                        });
-                    });
-                }
-
-                yPosition += 5;
-
-                // Section: Problemas Identificados
-                if (selectedCategories.size > 0) {
-                    checkNewPage(20);
-                    pdf.setFontSize(14);
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text('PROBLEMAS IDENTIFICADOS', margin, yPosition);
-                    yPosition += 8;
-
-                    Array.from(selectedCategories).forEach(catId => {
-                        checkNewPage(15);
-                        const cat = categories[catId];
-                        pdf.setFontSize(11);
-                        pdf.setFont(undefined, 'bold');
-                        pdf.text(`${cat.title}`, margin, yPosition);
-                        yPosition += 6;
-
-                        pdf.setFontSize(10);
-                        pdf.setFont(undefined, 'normal');
-
-                        if (cat.type === 'multi' && severityData[catId]) {
-                            cat.levels.forEach(level => {
-                                if (severityData[catId][level.id]) {
-                                    checkNewPage(6);
-                                    pdf.text(`  ${level.name}: ${severityData[catId][level.id]}`, margin + 2, yPosition);
-                                    yPosition += 5;
-                                }
-                            });
-                        } else if (cat.type === 'nutrients' && selectedNutrients.size > 0) {
-                            const nutrientsList = Array.from(selectedNutrients).map(nId => {
-                                const nutrient = cat.options.find(n => n.id === nId);
-                                return nutrient ? nutrient.name : nId;
-                            }).join(', ');
-                            checkNewPage(6);
-                            pdf.text(`  Deficientes: ${nutrientsList}`, margin + 2, yPosition);
-                            yPosition += 5;
-                        } else if (severityData[catId] && severityData[catId].main) {
-                            checkNewPage(6);
-                            pdf.text(`  Nível: ${severityData[catId].main}`, margin + 2, yPosition);
-                            yPosition += 5;
-                        }
-                        yPosition += 3;
-                    });
-                }
-
-                // Section: Photos
-                if (photos.length > 0) {
-                    checkNewPage(20);
-                    pdf.setFontSize(14);
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text('FOTOS', margin, yPosition);
-                    yPosition += 8;
-
-                    for (let i = 0; i < photos.length; i++) {
-                        const photo = photos[i];
-                        const photoType = photoTypes[photo.type];
-                        
-                        // Cada foto precisa de ~70mm de espaço (título + imagem)
-                        checkNewPage(70);
-                        
-                        pdf.setFontSize(10);
-                        pdf.setFont(undefined, 'bold');
-                        pdf.text(`${photo.categoryName} - ${photoType.name}`, margin, yPosition);
-                        yPosition += 5;
-
-                        try {
-                            // Calcula dimensões para manter proporção e caber na página A4
-                            const maxWidth = contentWidth;
-                            const maxHeight = 60; // Altura máxima em mm
-                            
-                            // Adiciona imagem ajustada
-                            pdf.addImage(photo.data, 'JPEG', margin, yPosition, maxWidth, maxHeight, undefined, 'FAST');
-                            yPosition += maxHeight + 8;
-                        } catch (err) {
-                            console.error('Error adding image:', err);
-                            pdf.setFont(undefined, 'normal');
-                            pdf.text('[Erro ao adicionar imagem]', margin, yPosition);
-                            yPosition += 10;
-                        }
-                    }
-                }
-
-                // Section: Observações
-                checkNewPage(30);
-                pdf.setFontSize(14);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('OBSERVAÇÕES', margin, yPosition);
-                yPosition += 8;
-
-                pdf.setFontSize(10);
-                pdf.setFont(undefined, 'normal');
-                const obsLines = pdf.splitTextToSize(observacoes, contentWidth);
-                obsLines.forEach(line => {
-                    checkNewPage(6);
-                    pdf.text(line, margin, yPosition);
-                    yPosition += 5;
-                });
-
-                yPosition += 5;
-
-                // Section: Recomendações
-                checkNewPage(30);
-                pdf.setFontSize(14);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('RECOMENDAÇÕES', margin, yPosition);
-                yPosition += 8;
-
-                pdf.setFontSize(10);
-                pdf.setFont(undefined, 'normal');
-                const recLines = pdf.splitTextToSize(recomendacoes, contentWidth);
-                recLines.forEach(line => {
-                    checkNewPage(6);
-                    pdf.text(line, margin, yPosition);
-                    yPosition += 5;
-                });
-
-                yPosition += 10;
-
-                // Section: Informações Adicionais
-                checkNewPage(30);
-                pdf.setFontSize(14);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('INFORMAÇÕES ADICIONAIS', margin, yPosition);
-                yPosition += 8;
-
-                pdf.setFontSize(10);
-                pdf.setFont(undefined, 'normal');
-                const additionalInfo = [
-                    `Técnico Responsável: ${tecnico}`,
-                    `Coordenadas: ${coordenadas}`,
-                    `Tipo de Ocorrência: ${tipo}`,
-                    `Amostra de Solo: ${amostraSolo}`
-                ];
-
-                additionalInfo.forEach(line => {
-                    checkNewPage(6);
-                    pdf.text(line, margin, yPosition);
-                    yPosition += 6;
-                });
-
-                // Footer on last page
-                pdf.setFontSize(8);
-                pdf.setTextColor(128, 128, 128);
-                pdf.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-
-                // Save PDF
-                const fileName = `Relatorio_Visita_${propriedade.replace(/\s+/g, '_')}_${data}.pdf`;
-                pdf.save(fileName);
-
-                document.body.removeChild(loadingDiv);
-
-                const successDiv = document.createElement('div');
-                successDiv.style.cssText = `
-                    position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    background: rgba(52, 199, 89, 0.95);
-                    color: white;
-                    padding: 20px 40px;
-                    border-radius: 12px;
-                    z-index: 10000;
-                    font-size: 1.1em;
-                    text-align: center;
-                `;
-                successDiv.textContent = '✓ PDF gerado com sucesso!';
-                document.body.appendChild(successDiv);
-
-                setTimeout(() => {
-                    document.body.removeChild(successDiv);
-                }, 2000);
-
-            } catch (error) {
-                console.error('Error generating PDF:', error);
-                alert('Erro ao gerar PDF: ' + error.message);
-                const loadingDiv = document.querySelector('div[style*="Gerando PDF"]');
-                if (loadingDiv && loadingDiv.parentNode) {
-                    document.body.removeChild(loadingDiv);
-                }
-            }
+    // Categorias Selecionadas
+    if (selectedCategories.size > 0) {
+      addText('Problemas Identificados', margin, yPosition, 11, 'bold');
+      yPosition += 8;
+      selectedCategories.forEach(catId => {
+        const cat = categories[catId];
+        addText(`${cat.icon} ${cat.name}`, margin, yPosition, 10, 'bold');
+        yPosition += 7;
+        if (cat.nutrients) {
+          const sel = Array.from(selectedNutrients).join(', ');
+          if (sel) addSection('Nutrientes:', sel);
         }
-    </script>
+        const severity = severityData[catId] || 'nenhum';
+        const severityLabels = { nenhum: 'Nenhum', baixa: 'Baixa', media: 'Média', alta: 'Alta' };
+        addSection('Severidade:', severityLabels[severity]);
+        yPosition += 3;
+      });
+    }
+
+    // Fotos
+    if (photos.length > 0) {
+      const photoSize = document.getElementById('photoSizeSelect').value;
+      let maxHeight;
+      switch (photoSize) {
+        case 'small': maxHeight = 40; break;
+        case 'large': maxHeight = 80; break;
+        default: maxHeight = 60;
+      }
+
+      addText('Fotos', margin, yPosition, 11, 'bold');
+      yPosition += 8;
+      for (let i = 0; i < photos.length; i++) {
+        const photo = photos[i];
+        const photoType = photoTypes[photo.type];
+        if (yPosition + maxHeight + 20 > 277) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        addText(`${photo.categoryName} - ${photoType.name}`, margin, yPosition, 9, 'bold');
+        yPosition += 5;
+        try {
+          pdf.addImage(photo.data, 'JPEG', margin, yPosition, contentWidth, maxHeight, undefined, 'FAST');
+          yPosition += maxHeight + 8;
+        } catch (err) {
+          addText('[Erro ao adicionar imagem]', margin, yPosition + 5, 9);
+          yPosition += 15;
+        }
+      }
+    }
+
+    // Observações, Recomendações, etc.
+    const obs = document.getElementById('observacoes').value;
+    const rec = document.getElementById('recomendacoes').value;
+    const tec = document.getElementById('tecnico').value;
+    const coord = document.getElementById('coordenadas').value;
+
+    if (obs) { addText('Observações', margin, yPosition, 11, 'bold'); yPosition += 8; addSection('', obs, true); }
+    if (rec) { addText('Recomendações', margin, yPosition, 11, 'bold'); yPosition += 8; addSection('', rec, true); }
+    if (tec) { addText('Responsável Técnico', margin, yPosition, 11, 'bold'); yPosition += 8; addSection('', tec); }
+    if (coord) { addText('Localização', margin, yPosition, 11, 'bold'); yPosition += 8; addSection('Coordenadas:', coord); }
+
+    // Rodapé
+    const pageCount = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(9);
+      pdf.setTextColor(150);
+      pdf.text(`Página ${i} de ${pageCount}`, pageWidth / 2, 287, null, null, 'center');
+    }
+
+    pdf.save(`relatorio_visita_${new Date().toISOString().slice(0,10)}.pdf`);
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao gerar PDF: ' + err.message);
+  } finally {
+    document.body.removeChild(loadingDiv);
+  }
+}
+</script>
 </body>
 </html>
+
