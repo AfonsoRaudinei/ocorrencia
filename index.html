@@ -136,7 +136,7 @@
         }
 
         .stage-display {
-            display: none;
+            width: 20px; height: 20px;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 245, 247, 0.98) 100%);
             backdrop-filter: blur(10px);
             border-radius: 16px;
@@ -272,7 +272,7 @@
         .category-circle img {
 width: 55px;            height: 55px;
             object-fit: contain;
-            display: none;
+            width: 20px; height: 20px;
         }
 
         /* Unselected state - gray/muted */
@@ -574,7 +574,7 @@ width: 55px;            height: 55px;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            display: none;
+            width: 20px; height: 20px;
             align-items: center;
             gap: 10px;
             padding: 14px 24px;
@@ -803,7 +803,7 @@ width: 55px;            height: 55px;
 
         /* Modal */
         .modal {
-            display: none;
+            width: 20px; height: 20px;
             position: fixed;
             top: 0;
             left: 0;
@@ -887,7 +887,7 @@ width: 55px;            height: 55px;
         }
 
         input[type="file"] {
-            display: none;
+            width: 20px; height: 20px;
         }
 
         @media (max-width: 600px) {
@@ -954,7 +954,7 @@ width: 55px;            height: 55px;
                     <label>Plantio</label>
                     <input type="date" id="plantio" onchange="calculateDAP()">
                 </div>
-                <div class="dap-info" id="dapInfo" style="display: none;">
+                <div class="dap-info" id="dapInfo" style="width: 20px; height: 20px;">
                     <strong>DAP: <span id="dapValue">0</span> dias</strong>
                 </div>
             </div>
@@ -993,7 +993,7 @@ width: 55px;            height: 55px;
                     <div class="dap-badge" id="stageDap"></div>
                 </div>
 
-                <div class="attention-points" id="attentionPoints" style="display: none;">
+                <div class="attention-points" id="attentionPoints" style="width: 20px; height: 20px;">
                     <h3>⚠️ Pontos de Atenção</h3>
                     <ul id="attentionList"></ul>
                 </div>
@@ -1040,11 +1040,11 @@ width: 55px;            height: 55px;
             <div id="problemsContainer"></div>
 
             <!-- Full Photos Section -->
-            <div class="section-photos-full" id="fullPhotosSection" style="display: none;">
+            <div class="section-photos-full" id="fullPhotosSection" style="width: 20px; height: 20px;">
                 <div class="section-title">Todas as Fotos</div>
                 <div class="photos-list-full" id="photosListFull"></div>
                 
-                <div class="pdf-settings-section" id="pdfSettings" style="display: none;">
+                <div class="pdf-settings-section" id="pdfSettings" style="width: 20px; height: 20px;">
                     <div class="pdf-settings-title">📄 Configurações do PDF</div>
                     <div class="pdf-setting-row">
                         <div class="pdf-setting-label">Qualidade</div>
