@@ -300,47 +300,47 @@ input[type="file"] {
     position: relative;
     overflow: hidden;
     background: #e8e8e8; /* Fundo cinza quando não selecionado */
-    border: 2px solid transparent; /* Borda apenas como contorno */
+    border: 3px solid #e8e8e8; /* Borda cinza quando não selecionado */
 }
 
-/* IMAGENS DENTRO DOS CÍRCULOS - CORRIGIDO */
+/* IMAGENS DENTRO DOS CÍRCULOS - OCUPAM TODO O ESPAÇO */
 .category-circle img {
-    width: 38px;
-    height: 38px;
-    object-fit: contain;
-    filter: grayscale(1) opacity(0.6); /* Imagem em cinza quando não selecionado */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ocupa todo o círculo */
+    filter: grayscale(1) opacity(0.5); /* Imagem em cinza quando não selecionado */
     transition: filter 0.3s;
 }
 
-/* CATEGORIA SELECIONADA - Gradientes vibrantes */
+/* CATEGORIA SELECIONADA - Bordas coloridas vibrantes */
 .category-item.selected .category-circle.doenca { 
-    background: linear-gradient(135deg, #34C759 0%, #28a745 100%);
+    background: white;
+    border: 4px solid #34C759;
     box-shadow: 0 4px 16px rgba(52, 199, 89, 0.4);
-    border-color: transparent;
 }
 
 .category-item.selected .category-circle.insetos { 
-    background: linear-gradient(135deg, #FF2D55 0%, #e0204d 100%);
+    background: white;
+    border: 4px solid #FF2D55;
     box-shadow: 0 4px 16px rgba(255, 45, 85, 0.4);
-    border-color: transparent;
 }
 
 .category-item.selected .category-circle.ervas { 
-    background: linear-gradient(135deg, #FF9500 0%, #e68600 100%);
+    background: white;
+    border: 4px solid #FF9500;
     box-shadow: 0 4px 16px rgba(255, 149, 0, 0.4);
-    border-color: transparent;
 }
 
 .category-item.selected .category-circle.nutrientes { 
-    background: linear-gradient(135deg, #8E8E93 0%, #6d6d72 100%);
+    background: white;
+    border: 4px solid #8E8E93;
     box-shadow: 0 4px 16px rgba(142, 142, 147, 0.4);
-    border-color: transparent;
 }
 
 .category-item.selected .category-circle.agua { 
-    background: linear-gradient(135deg, #30B0C7 0%, #28a0b5 100%);
+    background: white;
+    border: 4px solid #30B0C7;
     box-shadow: 0 4px 16px rgba(48, 176, 199, 0.4);
-    border-color: transparent;
 }
 
 /* Imagem colorida quando selecionada */
@@ -876,8 +876,8 @@ input[type="file"] {
     }
 
     .category-circle img {
-        width: 32px;
-        height: 32px;
+        width: 100%;
+        height: 100%;
     }
 
     .category-name {
