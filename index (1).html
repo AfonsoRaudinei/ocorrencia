@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Visita - Soloforte</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header-bar">
+        <div class="header-close" onclick="clearLocalStorage()">🗑️</div>
+        <div class="header-title">Relatório de Visita</div>
+        <div class="header-save">
+            <div class="header-action" onclick="exportToPDF()">PDF</div>
+            <div class="header-action" onclick="window.print()">🖨️</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="content">
+            <!-- Informações da Visita -->
+            <div class="section">
+                <div class="section-title">Informações da Visita</div>
+                <div class="form-row">
+                    <label>Produtor</label>
+                    <input type="text" id="produtor" placeholder="Nome">
+                </div>
+                <div class="form-row">
+                    <label>Propriedade</label>
+                    <input type="text" id="propriedade" placeholder="Nome">
+                </div>
+                <div class="form-row">
+                    <label>Data</label>
+                    <input type="date" id="data">
+                </div>
+                <div class="form-row">
+                    <label>Área (ha)</label>
+                    <input type="number" id="area" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-row">
+                    <label>Cultivar</label>
+                    <input type="text" id="cultivar" placeholder="TMG 7062">
+                </div>
+                <div class="form-row">
+                    <label>Plantio</label>
+                    <input type="date" id="plantio" onchange="calculateDAP()">
+                </div>
+                <div class="dap-info" id="dapInfo">
+                    <strong>DAP: <span id="dapValue">0</span> dias</strong>
+                </div>
+            </div>
+
+            <!-- Estádio Fenológico -->
+            <div class="section">
+                <div class="section-title">Estádio Fenológico</div>
+                <div class="form-row">
+                    <label>Estádio</label>
+                    <select id="stageSelect" onchange="showStageInfo()">
+                        <option value="">Selecione</option>
+                        <option value="VE">VE - Emergência</option>
+                        <option value="VC">VC - Cotilédones</option>
+                        <option value="V1">V1 - 1ª Trifoliolada</option>
+                        <option value="V2">V2 - 2ª Trifoliolada</option>
+                        <option value="V3">V3 - 3ª Trifoliolada</option>
+                        <option value="V4">V4 - 4ª Trifoliolada</option>
+                        <option value="V5">V5 - 5ª Trifoliolada</option>
+                        <option value="R1">R1 - Florescimento</option>
+                        <option value="R2">R2 - Floração Plena</option>
+                        <option value="R3">R3 - Vagens 1cm</option>
+                        <option value="R4">R4 - Vagens 2cm</option>
+                        <option value="R5.1">R5.1 - Início Enchimento</option>
+                        <option value="R5.3">R5.3 - 50% Enchimento</option>
+                        <option value="R5.5">R5.5 - 100% Enchimento</option>
+                        <option value="R6">R6 - Grãos Formados</option>
+                        <option value="R7">R7 - Início Maturação</option>
+                        <option value="R8">R8 - Maturação Plena</option>
+                    </select>
+                </div>
+
+                <div class="stage-display" id="stageDisplay">
+                    <div class="stage-icon-large" id="stageIcon"></div>
+                    <div class="stage-name-large" id="stageName"></div>
+                    <div class="stage-description-large" id="stageDescription"></div>
+                    <div class="dap-badge" id="stageDap"></div>
+                </div>
+
+                <div class="attention-points" id="attentionPoints">
+                    <h3>⚠️ Pontos de Atenção</h3>
+                    <ul id="attentionList"></ul>
+                </div>
+            </div>
+
+            <!-- Categorias -->
+            <div class="section">
+                <div class="section-title">Categoria</div>
+                <div class="category-grid">
+                    <div class="category-item" onclick="toggleCategory('doenca')" data-category="doenca">
+                        <div class="category-circle doenca">
+                            <img src="doencas.png" alt="Doença">
+                        </div>
+                        <div class="category-name">Doença</div>
+                    </div>
+                    <div class="category-item" onclick="toggleCategory('insetos')" data-category="insetos">
+                        <div class="category-circle insetos">
+                            <img src="insetos.png" alt="Insetos">
+                        </div>
+                        <div class="category-name">Insetos</div>
+                    </div>
+                    <div class="category-item" onclick="toggleCategory('ervas')" data-category="ervas">
+                        <div class="category-circle ervas">
+                            <img src="ervas.png" alt="Ervas daninhas">
+                        </div>
+                        <div class="category-name">Ervas daninhas</div>
+                    </div>
+                    <div class="category-item" onclick="toggleCategory('nutrientes')" data-category="nutrientes">
+                        <div class="category-circle nutrientes">
+                            <img src="nutricional.png" alt="Nutrientes">
+                        </div>
+                        <div class="category-name">Nutrientes</div>
+                    </div>
+                    <div class="category-item" onclick="toggleCategory('agua')" data-category="agua">
+                        <div class="category-circle agua">
+                            <img src="estresse.png" alt="Água">
+                        </div>
+                        <div class="category-name">Água</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Problems Container -->
+            <div id="problemsContainer"></div>
+
+            <!-- Full Photos Section -->
+            <div class="section-photos-full" id="fullPhotosSection">
+                <div class="section-title">Todas as Fotos</div>
+                <div class="photos-list-full" id="photosListFull"></div>
+                
+                <div class="pdf-settings-section" id="pdfSettings">
+                    <div class="pdf-settings-title">📄 Configurações do PDF</div>
+                    <div class="pdf-setting-row">
+                        <div class="pdf-setting-label">Qualidade</div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="photo-size-btn" onclick="setPhotoQuality('baixa', this)">Baixa</button>
+                            <button class="photo-size-btn active" onclick="setPhotoQuality('media', this)">Média</button>
+                            <button class="photo-size-btn" onclick="setPhotoQuality('alta', this)">Alta</button>
+                        </div>
+                    </div>
+                    <div class="pdf-setting-row">
+                        <div class="pdf-setting-label">Fotos/Página</div>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="photo-size-btn active" onclick="setPhotosPerPage(1, this)">1</button>
+                            <button class="photo-size-btn" onclick="setPhotosPerPage(2, this)">2</button>
+                            <button class="photo-size-btn" onclick="setPhotosPerPage(3, this)">3</button>
+                        </div>
+                    </div>
+                    <div class="pdf-setting-row" style="border: none;">
+                        <div class="pdf-setting-label">Tamanho</div>
+                        <div class="pdf-setting-value" id="estimatedSize">~2.5 MB</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Observações -->
+            <div class="section">
+                <div class="section-title">Observações</div>
+                <div class="form-row">
+                    <textarea id="observacoes" placeholder="Observações gerais sobre a lavoura..."></textarea>
+                </div>
+            </div>
+
+            <!-- Recomendações -->
+            <div class="section">
+                <div class="section-title">Recomendações</div>
+                <div class="form-row">
+                    <textarea id="recomendacoes" placeholder="Recomendações técnicas..."></textarea>
+                </div>
+            </div>
+
+            <!-- Responsável -->
+            <div class="section">
+                <div class="section-title">Responsável</div>
+                <div class="form-row">
+                    <input type="text" id="tecnico" placeholder="Nome do técnico">
+                </div>
+            </div>
+
+            <!-- Localização -->
+            <div class="section">
+                <div class="section-title">Localização</div>
+                <div class="form-row">
+                    <label>Coordenadas</label>
+                    <input type="text" id="coordenadas" placeholder="Pin" readonly>
+                </div>
+                <div style="padding: 12px 0; color: #007AFF; cursor: pointer; font-size: 0.95em;" onclick="getCurrentLocation()">
+                    📍 Definir localização atual
+                </div>
+            </div>
+
+            <!-- Tipo de Ocorrência -->
+            <div class="section">
+                <div class="section-title">Tipo de Ocorrência</div>
+                <div style="display: flex; gap: 30px; padding: 12px 0;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex: none;">
+                        <input type="radio" name="tipo" value="sazonal" checked style="width: 20px; height: 20px;">
+                        <span>Sazonal</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex: none;">
+                        <input type="radio" name="tipo" value="permanente" style="width: 20px; height: 20px;">
+                        <span>Permanente</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Amostras -->
+            <div class="section">
+                <div class="section-title">Amostras</div>
+                <div style="padding: 12px 0;">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                        <input type="checkbox" id="amostraSolo" style="width: 22px; height: 22px;">
+                        <span>Amostra de solo</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Photo Button -->
+    <div class="floating-photo-btn" id="floatingPhotoBtn" onclick="takePhotoForActiveCategory()">
+        <span class="floating-photo-btn-icon">📷</span>
+        <span class="floating-photo-btn-text">Próxima foto:</span>
+        <span class="floating-photo-btn-category" id="floatingCategoryName">
+            <img src="doencas.png" alt="" id="floatingCategoryIcon">
+            <span id="floatingCategoryText">Doença</span>
+        </span>
+    </div>
+
+    <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto()" style="display: none;">
+
+    <div class="save-indicator" id="saveIndicator">✓ Salvo</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
